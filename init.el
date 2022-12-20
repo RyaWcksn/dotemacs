@@ -31,6 +31,27 @@
 
 (use-package general
   :ensure t)
+  :config
+  (general-create-definer rune/leader-keys
+    :keymaps '(normal visual emacs)
+    :prefix "SPC"
+    :global-prefix "SPC")
+
+  (rune/leader-keys
+    "t"  '(:ignore t :which-key "Toggles")
+    "tt" '(counsel-load-theme :which-key "Choose theme"))
+
+(use-package magit
+  :ensure t
+  :custom
+  (magit-displey-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package evil-magit
+  :ensure t
+  :after magit)
+
+(general-define-key
+ "M-x" 'counsel-M-x)
 
 (use-package evil
   :init
@@ -40,7 +61,6 @@
   (setq evil-want-C-i-jump nil)
   :config
   (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
   ;; Use visual line motions even outside of visual-line-mode buffers
@@ -51,6 +71,7 @@
   (evil-set-initial-state 'dashboard-mode 'normal))
 
 (use-package evil-collection
+  :ensure t
   :after evil
   :config
   (evil-collection-init))
@@ -212,6 +233,17 @@
   :init
  (ivy-rich-mode 1))
 
-(package-install all-the-icons
+(use-package hydra
+  :ensure t)
+
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(rune/leader-keys
+  "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+(use-package all-the-icons
                  :ensure t)
-> 
