@@ -46,7 +46,8 @@
 
   (rune/leader-keys
     "t"  '(:ignore t :which-key "Toggles")
-    "tt" '(counsel-load-theme :which-key "Choose theme"))
+    "tt" '(counsel-load-theme :which-key "Choose theme")
+    "ws" '(evil-save :which-key "Save"))
 
 (use-package magit
   :ensure t
