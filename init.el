@@ -47,8 +47,17 @@
   (rune/leader-keys
     "t"  '(:ignore t :which-key "Toggles")
     "tt" '(counsel-load-theme :which-key "Choose theme")
-    "ws" '(evil-save :which-key "Save")
     ";" '(counsel-M-x :which-key "Meta")
+    
+    "w"  '(:ignore t :which-key "Window")
+    "ws" '(evil-save :which-key "Save")
+    "wj" '(evil-window-down :which-key "Go Bottom")
+    "wk" '(evil-window-top :which-key "Go Top")
+    "wh" '(evil-window-left :which-key "Go Left")
+    "wl" '(evil-window-right :which-key "Go Right")
+    "wb" '(evil-window-split :which-key "Split")
+    "wv" '(evil-window-vsplit :which-key "Vsplit")
+    "wq" '(delete-window :which-key "Quit")
 
     "g" '(:ignore t :which-key "Git")
     "gs" '(magit-status :which-key "Magit"))
@@ -313,3 +322,17 @@
 (use-package visual-fill-column
   :hook (org-mode . efs/org-mode-visual-fill))
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(evil-magit org-bullets org yasnippet which-key visual-fill-column use-package smex paredit magit lsp-ui key-chord json-mode ivy-rich ido-vertical-mode general flycheck evil-collection doom-modeline dashboard dap-mode counsel company all-the-icons))
+ '(warning-suppress-types '((use-package))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
