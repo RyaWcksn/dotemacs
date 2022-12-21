@@ -113,10 +113,6 @@
   (smex-initialize))
 
 ;; LSP Mode
-(use-package lsp-mode
-  :ensure t
-  :config
-  (setq lsp-headerline-breadcrumb-enable nil))
 
 
 ;; LSP UI
@@ -124,13 +120,21 @@
 ;; DAP
 ;; Flycheck
 (use-package flycheck :ensure t)
-(use-package lsp-ui :ensure t)
 (use-package dap-mode :ensure t)
 (use-package company
   :ensure t
-  :config
-  (company-mode 1)
+  :config (progn
+            ;; don't add any dely before trying to complete thing being typed
+            ;; the call/response to gopls is asynchronous so this should have little
+            ;; to no affect on edit latency
+            (setq company-idle-delay 0)
+            ;; start completing after a single character instead of 3
+            (setq company-minimum-prefix-length 1)
+            ;; align fields in completions
+            (setq company-tooltip-align-annotations t)
+            )
   )
+  (company-mode 1)
   
 (use-package which-key
   :ensure t
@@ -171,7 +175,7 @@
 ;; Set the title
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
 ;; Set the banner
-(setq dashboard-startup-banner "~/.emacs.d/mayu.png" )
+(setq dashboard-startup-banner "~/.emacs.d/hikaru.png" )
 ;; Value can be
 ;; - nil to display no banner
 ;; - 'official which displays the official emacs logo
@@ -322,17 +326,47 @@
 (use-package visual-fill-column
   :hook (org-mode . efs/org-mode-visual-fill))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(evil-magit org-bullets org yasnippet which-key visual-fill-column use-package smex paredit magit lsp-ui key-chord json-mode ivy-rich ido-vertical-mode general flycheck evil-collection doom-modeline dashboard dap-mode counsel company all-the-icons))
- '(warning-suppress-types '((use-package))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  (setq lsp-keymap-prefix (SPC l)
+  :config
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (lsp-enable-which-key-integration t))
+
+  (use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode)
+
+ (defun ime-go-before-save ()
+  (interactive)
+  (when lsp-mode
+    (lsp-organize-imports)
+    (lsp-format-buffer)))
+
+(use-package go-mode
+  :ensure t
+  :defer t
+  :straight t
+  :config
+  (add-hook 'go-mode-hook 'lsp-deferred)
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook 'ime-go-before-save))))
+
+(use-package company-lsp
+  :ensure t
+  :commands company-lsp)
+  :config (progn
+            ;; don't add any dely before trying to complete thing being typed
+            ;; the call/response to gopls is asynchronous so this should have little
+            ;; to no affect on edit latency
+            (setq company-idle-delay 0)
+            ;; start completing after a single character instead of 3
+            (setq company-minimum-prefix-length 1)
+            ;; align fields in completions
+            (setq company-tooltip-align-annotations t)
+            )
+
+
