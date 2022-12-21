@@ -47,7 +47,11 @@
   (rune/leader-keys
     "t"  '(:ignore t :which-key "Toggles")
     "tt" '(counsel-load-theme :which-key "Choose theme")
-    "ws" '(evil-save :which-key "Save"))
+    "ws" '(evil-save :which-key "Save")
+    ";" '(counsel-M-x :which-key "Meta")
+
+    "g" '(:ignore t :which-key "Git")
+    "gs" '(magit-status :which-key "Magit"))
 
 (use-package magit
   :ensure t
