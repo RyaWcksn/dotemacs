@@ -308,7 +308,7 @@
   (setq org-ellipsis " ▾")
   (efs/org-font-setup)
   (setq org-agenda-files
-	'("~/Orgs/agenda.org"))
+	'("~/Orgs/agenda.org")))
 
 (use-package org-bullets
   :after org
@@ -344,6 +344,10 @@
     (lsp-format-buffer)))
 
 (package-install 'go-mode)
+
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook #'yas-minor-mode)
+
 (use-package go-mode
   :ensure t
   :bind (
@@ -378,19 +382,6 @@
 
 ;; Snippet
 (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang")
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(mutt-mode doom-themes smudge company-lsp which-key visual-fill-column use-package smex paredit org-bullets magit lsp-ui key-chord json-mode ivy-rich ido-vertical-mode go-snippets go-mode general flycheck evil-collection doom-modeline dashboard dap-mode counsel company all-the-icons)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 (use-package smudge
   :ensure t)
@@ -399,3 +390,18 @@
 (define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
 (setq smudge-transport 'connect)
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("dc8285f7f4d86c0aebf1ea4b448842a6868553eded6f71d1de52f3dcbc960039" default))
+ '(package-selected-packages
+   '(company-lsp which-key visual-fill-column use-package smudge smex paredit org-bullets mutt-mode magit lsp-ui key-chord json-mode ivy-rich ido-vertical-mode go-snippets go-mode general flycheck evil-collection doom-themes doom-modeline dashboard dap-mode counsel company all-the-icons)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

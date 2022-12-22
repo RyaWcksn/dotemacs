@@ -2,7 +2,17 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("CIMB Project"
+(("Ayoconnect"
+ (filename . "~/Projects/ayopop/")
+ (front-context-string . "SDDC.zip\n  -rw-r")
+ (rear-context-string . "53 Oct 21 16:44 ")
+ (position . 303))
+("Config"
+ (filename . "~/.emacs.d/")
+ (front-context-string . "request\n  -rw-r-")
+ (rear-context-string . "96 Dec 22 10:57 ")
+ (position . 1091))
+("CIMB Project"
  (filename . "~/Projects/ayopop/of-snap-direct-debit-cimb/main.go")
  (front-context-string . "	\"bitbucket.org/")
  (rear-context-string . "(\n	\"fmt\"\n	\"os\"\n\n")
