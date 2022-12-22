@@ -34,7 +34,6 @@
    (package-install 'use-package))
 
 (require 'use-package)
-(setq use-package-always-ensure t)
 
 (use-package general
   :ensure t)
@@ -58,6 +57,7 @@
     "wb" '(evil-window-split :which-key "Split")
     "wv" '(evil-window-vsplit :which-key "Vsplit")
     "wq" '(delete-window :which-key "Quit")
+    "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
 
     "g" '(:ignore t :which-key "Git")
     "gs" '(magit-status :which-key "Magit"))
@@ -66,10 +66,6 @@
   :ensure t
   :custom
   (magit-displey-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-(use-package evil-magit
-  :ensure t
-  :after magit)
 
 (general-define-key
  "M-x" 'counsel-M-x)
@@ -337,7 +333,7 @@
 
   (use-package lsp-ui
     :ensure t
-    :commands lsp-ui-mode)
+    :commands lsp-ui-mode))
 
  (defun ime-go-before-save ()
   (interactive)
@@ -345,15 +341,22 @@
     (lsp-organize-imports)
     (lsp-format-buffer)))
 
+(package-install 'go-mode)
 (use-package go-mode
   :ensure t
-  :defer t
-  :straight t
+  :bind (
+         ;; If you want to switch existing go-mode bindings to use lsp-mode/gopls instead
+         ;; uncomment the following lines
+         ;; ("C-c C-j" . lsp-find-definition)
+         ;; ("C-c C-d" . lsp-describe-thing-at-point)
+         )
+  :hook ((go-mode . lsp-deferred)
+         (before-save . lsp-format-buffer)
+         (before-save . lsp-organize-imports))
   :config
-  (add-hook 'go-mode-hook 'lsp-deferred)
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (add-hook 'before-save-hook 'ime-go-before-save))))
+  (setq gofmt-command "goimports"))
+
+(provide 'gopls-config)
 
 (use-package company-lsp
   :ensure t
@@ -370,3 +373,6 @@
             )
 
 
+
+;; Snippet
+(add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang")
