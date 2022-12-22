@@ -186,7 +186,7 @@
 ;; To disable shortcut "jump" indicators for each section, set
 (setq dashboard-show-shortcuts nil)
 
-(load-theme 'tango-dark)
+(load-theme 'doom-horizon)
 
 ;; Keybind
 
@@ -306,7 +306,9 @@
   :hook (org-mode . efs/org-mode-setup)
   :config
   (setq org-ellipsis " ▾")
-  (efs/org-font-setup))
+  (efs/org-font-setup)
+  (setq org-agenda-files
+	'("~/Orgs/agenda.org"))
 
 (use-package org-bullets
   :after org
@@ -376,3 +378,24 @@
 
 ;; Snippet
 (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(mutt-mode doom-themes smudge company-lsp which-key visual-fill-column use-package smex paredit org-bullets magit lsp-ui key-chord json-mode ivy-rich ido-vertical-mode go-snippets go-mode general flycheck evil-collection doom-modeline dashboard dap-mode counsel company all-the-icons)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+(use-package smudge
+  :ensure t)
+(setq smudge-oauth2-client-secret "463ea6db52404a62a9fd97b9428da25a")
+(setq smudge-oauth2-client-id "d96cacf178594a9bab92506eea93b7bf")
+(define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
+(setq smudge-transport 'connect)
+

@@ -1,0 +1,10 @@
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("CIMB Project"
+ (filename . "~/Projects/ayopop/of-snap-direct-debit-cimb/main.go")
+ (front-context-string . "	\"bitbucket.org/")
+ (rear-context-string . "(\n	\"fmt\"\n	\"os\"\n\n")
+ (position . 38))
+)
