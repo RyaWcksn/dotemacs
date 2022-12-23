@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Ayoconnect"
+(("org-capture-last-stored"
+ (filename . "~/.notes")
+ (front-context-string . "** TODO \n  [2022")
+ (rear-context-string . "2022-12-23 Fri]\n")
+ (position . 37))
+("Ayoconnect"
  (filename . "~/Projects/ayopop/")
  (front-context-string . "SDDC.zip\n  -rw-r")
  (rear-context-string . "53 Oct 21 16:44 ")

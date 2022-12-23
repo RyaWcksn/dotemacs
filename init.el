@@ -7,9 +7,14 @@
 (global-hl-line-mode 1)
 (setq make-backup-file nil
       auto-save-default t)
+(setq split-width-threshold 1 )
 
 ;; Y/N
 (defalias 'yes-or-no-p 'y-or-n-p)
+
+(require 'org-tempo)
+
+(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp" ))
 
 ;; tabs off
 (setq indent-tabs-mode nil)
@@ -60,7 +65,16 @@
     "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
 
     "g" '(:ignore t :which-key "Git")
-    "gs" '(magit-status :which-key "Magit"))
+    "gs" '(magit-status :which-key "Magit")
+
+    "o" '(:ignore t :which-key "Open")
+    "ot" '(:ignore t :which-key "Treemacs")
+    "otd" '(treemacs-select-directory :which-key "Select Directory")
+    "ote" '(treemacs :which-key "Toggle Treemacs")
+
+    "oo" '(:ignore t :which-key "Org")
+    "ooa" '(org-agenda :which-key "Org Agenda")
+    )
 
 (use-package magit
   :ensure t
@@ -138,7 +152,12 @@
   :config
   (setq which-key-idle-delay 0.3)
   (which-key-mode 1))
-(use-package yasnippet :ensure t)
+(use-package yasnippet :ensure t
+  :config
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/go-mode/")
+  (yas-global-mode 1)
+  )
+
 (use-package dash :ensure t)
 (use-package ivy
   :ensure t
@@ -291,7 +310,7 @@
                   (org-level-6 . 1.1)
                   (org-level-7 . 1.1)
                   (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height (cdr face)))
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -348,6 +367,13 @@
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook #'yas-minor-mode)
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+ (python . t)))
+
+(setq org-confirm-babel-evaluate nil)
+
 (use-package go-mode
   :ensure t
   :bind (
@@ -364,24 +390,7 @@
 
 (provide 'gopls-config)
 
-(use-package company-lsp
-  :ensure t
-  :commands company-lsp)
-  :config (progn
-            ;; don't add any dely before trying to complete thing being typed
-            ;; the call/response to gopls is asynchronous so this should have little
-            ;; to no affect on edit latency
-            (setq company-idle-delay 0)
-            ;; start completing after a single character instead of 3
-            (setq company-minimum-prefix-length 1)
-            ;; align fields in completions
-            (setq company-tooltip-align-annotations t)
-            )
-
-
-
 ;; Snippet
-(add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang")
 
 (use-package smudge
   :ensure t)
@@ -397,3 +406,29 @@
     (evil-define-key '(normal visual) 'lsp-mode
       (kbd "SPC l") lsp-command-map)
     (evil-normalize-keymaps))
+(load "~/.emacs.d/go-snippets/go-snippets.el" :after yasnippet)
+
+(defhydra yt-hydra/help (:color blue :hint nil)
+  "
+_mp_ magit-push #_mc_ magit-commit #_md_ magit diff #_mla_ magit diff #_mla_ magit status
+"
+  ;;Magit part
+  ("mp" magit-push)
+  ("mc" magit-commit)
+  ("md" magit-diff)
+  ("mla" magit-log-all)
+  ("ms" magit-status)
+  )
+(global-set-key (kbd "<f1>") 'yt-hydra/help/body)
+
+(setq org-capture-templates
+       '(("t" "todo" entry (file org-default-notes-file)
+	  "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
+	 ("m" "Meeting" entry (file org-default-notes-file)
+	  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
+	 ("d" "Diary" entry (file+datetree "~/org/diary.org")
+	  "* %?\n%U\n" :clock-in t :clock-resume t)
+	 ("i" "Idea" entry (file org-default-notes-file)
+	  "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
+	 ("n" "Next Task" entry (file+headline org-default-notes-file "Tasks")
+	  "** NEXT %? \nDEADLINE: %t") ))

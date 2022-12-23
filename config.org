@@ -1,0 +1,32 @@
+#+TITLE: Emacs Config
+#+PROPERTY: header-args:emacs-lisp :tangle ./new-init.el
+
+* Basic UI
+** Basic
+#+begin_src emacs-lisp :tangle ./new-init.el
+  (setq user-full-name "Pramudya Arya Wicaksana")
+
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (global-hl-line-mode 1)
+  (setq make-backup-file nil
+        auto-save-default t)
+  (setq split-width-threshold 1 )
+
+  ;; Y/N
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; tabs off
+  (setq indent-tabs-mode nil)
+
+  (show-paren-mode t)
+
+(require 'org-tempo)
+
+(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+#+end_src
+
+#+RESULTS
+** 
