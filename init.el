@@ -1,25 +1,79 @@
 (setq user-full-name "Pramudya Arya Wicaksana")
 
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-(global-hl-line-mode 1)
-(setq make-backup-file nil
-      auto-save-default t)
-(setq split-width-threshold 1 )
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (global-hl-line-mode 1)
+  (setq make-backup-file nil
+        auto-save-default t)
+  (setq split-width-threshold 1 )
 
-;; Y/N
-(defalias 'yes-or-no-p 'y-or-n-p)
+  ;; Y/N
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
+  ;; tabs off
+  (setq indent-tabs-mode nil)
+
+  (show-paren-mode t)
+  
 (require 'org-tempo)
 
-(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp" ))
+(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-;; tabs off
-(setq indent-tabs-mode nil)
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
 
-(show-paren-mode t)
+;; Set the title
+(setq dashboard-banner-logo-title "Personal Development Environment")
+;; Set the banner
+(setq dashboard-startup-banner "~/.emacs.d/hikaru.png" )
+;; Value can be
+;; - nil to display no banner
+;; - 'official which displays the official emacs logo
+;; - 'logo which displays an alternative emacs logo
+;; - 1, 2 or 3 which displays one of the text banners
+;; - "path/to/your/image.gif", "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever gif/image/text you would prefer
+;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
+
+;; Content is not centered by default. To center, set
+(setq dashboard-center-content t)
+
+;; To disable shortcut "jump" indicators for each section, set
+(setq dashboard-show-shortcuts nil)
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 15)))
+
+(use-package ivy-rich
+  :ensure t
+  :init
+ (ivy-rich-mode 1))
+
+(use-package counsel
+  :ensure t)
+
+(general-define-key
+ "M-x" 'counsel-M-x)
+
+(use-package all-the-icons
+  :ensure t)
+
+(use-package doom-themes 
+:ensure t
+:init (load-theme 'doom-horizon t)
+)
+
+(setq explicit-shell-file-name "/usr/bin/zsh")
+(setq shell-file-name "zsh")
+(setq explicit-zsh-args '("--login" "--interactive"))
+(defun zsh-shell-mode-setup ()
+  (setq-local comint-process-echoes t))
+(add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
 
 ;; Pakcages
 
@@ -59,7 +113,7 @@
     "wk" '(evil-window-top :which-key "Go Top")
     "wh" '(evil-window-left :which-key "Go Left")
     "wl" '(evil-window-right :which-key "Go Right")
-    "wb" '(evil-window-split :which-key "Split")
+    "wc" '(evil-window-split :which-key "Split")
     "wv" '(evil-window-vsplit :which-key "Vsplit")
     "wq" '(delete-window :which-key "Quit")
     "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
@@ -72,17 +126,9 @@
     "otd" '(treemacs-select-directory :which-key "Select Directory")
     "ote" '(treemacs :which-key "Toggle Treemacs")
 
-    "oo" '(:ignore t :which-key "Org")
-    "ooa" '(org-agenda :which-key "Org Agenda")
+    "oa" '(org-agenda :which-key "Org Agenda")
+    "oc" '(cfw:open-org-calendar :which-key "Calendar")
     )
-
-(use-package magit
-  :ensure t
-  :custom
-  (magit-displey-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-(general-define-key
- "M-x" 'counsel-M-x)
 
 (use-package evil
   :init
@@ -101,177 +147,20 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
+(use-package paredit :ensure t)
+
 (use-package evil-collection
   :ensure t
   :after evil
   :config
   (evil-collection-init))
 
-(use-package counsel
-  :ensure t)
-
-
-
-
-;; Paredit
-(use-package paredit :ensure t)
-
-;; Smex
-(use-package smex
-  :ensure t
-  :config
-  (smex-initialize))
-
-;; LSP Mode
-
-
-;; LSP UI
-;; Company
-;; DAP
-;; Flycheck
-(use-package flycheck :ensure t)
-(use-package dap-mode :ensure t)
-(use-package company
-  :ensure t
-  :config (progn
-            ;; don't add any dely before trying to complete thing being typed
-            ;; the call/response to gopls is asynchronous so this should have little
-            ;; to no affect on edit latency
-            (setq company-idle-delay 0)
-            ;; start completing after a single character instead of 3
-            (setq company-minimum-prefix-length 1)
-            ;; align fields in completions
-            (setq company-tooltip-align-annotations t)
-            )
-  )
-  (company-mode 1)
-  
 (use-package which-key
   :ensure t
   :diminish (which-key-mode)
   :config
   (setq which-key-idle-delay 0.3)
   (which-key-mode 1))
-(use-package yasnippet :ensure t
-  :config
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/go-mode/")
-  (yas-global-mode 1)
-  )
-
-(use-package dash :ensure t)
-(use-package ivy
-  :ensure t
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)	
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
-
-(use-package hydra :ensure t)
-(use-package json-mode :ensure t)
-(use-package key-chord :ensure t)
-
-;; Dashboard
-(use-package dashboard
-  :ensure t
-  :config
-  (dashboard-setup-startup-hook))
-
-;; Set the title
-(setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
-;; Set the banner
-(setq dashboard-startup-banner "~/.emacs.d/hikaru.png" )
-;; Value can be
-;; - nil to display no banner
-;; - 'official which displays the official emacs logo
-;; - 'logo which displays an alternative emacs logo
-;; - 1, 2 or 3 which displays one of the text banners
-;; - "path/to/your/image.gif", "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever gif/image/text you would prefer
-;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
-
-;; Content is not centered by default. To center, set
-(setq dashboard-center-content t)
-
-;; To disable shortcut "jump" indicators for each section, set
-(setq dashboard-show-shortcuts nil)
-
-(load-theme 'doom-horizon)
-
-;; Keybind
-
-(use-package magit
-  :bind ("C-x g" . magit-status)
-  :ensure t
-  :config
-  (add-hook 'after-save-hook 'magit-after-save-refresh-status))
-
-(unless (package-installed-p 'evil)
-  (package-install 'evil))
-
-
-(setq gc-cons-threshold (* 100 1024 1024)
-      read-process-output-max (* 1024 1024)
-      company-idle-delay 0.0
-      comany-minimum-prefix-length 1
-      create-lockfiles nil)
-
-(with-eval-after-load 'lsp-mode
-  (require 'dap-chrome)
-  (setq lsp-modeline-diagnostics-enable t)
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-  (yas-global-mode))
-
-(use-package ido-vertical-mode
-  :ensure t
-  :init
-  (require 'ido)
-  (ido-mode t)
-  (setq ido-enable-prefix nil
-        ido-enable-flex-matching t
-        ido-case-fold nil
-        ido-auto-merge-work-directories-length -1
-        ido-create-new-buffer 'always
-        ido-use-filename-at-point nil
-        ido-max-prospects 10)
-  (require 'ido-vertical-mode)
-  (ido-vertical-mode)
-
-  (require 'dash)
-  (defun my/ido-go-straight-home ()
-    (interactive)
-    (cond
-     ((looking-back "~/") (insert "Developer/"))
-     ((looking-back "~/") (insert "Developer/"))
-     (:else (call-interactively 'self-insert-command))))
-  (defun my/setup-ido ()
-    (define-key ido-file-completion-map (kbd "~") 'my/ido-go-straight-home)
-    (define-key ido-file-completion-map (kbd "C-~") 'my/ido-go-straight-home))
-
-  (add-hook 'ido-setup-hook 'my/setup-ido)
-  (add-to-list 'ido-ignore-directories "node_modules"))
-
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
-
-(column-number-mode)
-(global-display-line-numbers-mode t)
-
-(use-package ivy-rich
-  :ensure t
-  :init
- (ivy-rich-mode 1))
 
 (use-package hydra
   :ensure t)
@@ -285,8 +174,34 @@
 (rune/leader-keys
   "ts" '(hydra-text-scale/body :which-key "scale text"))
 
-(use-package all-the-icons
-  :ensure t)
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status)
+  :custom
+  (magit-displey-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package flycheck :ensure t)
+
+(use-package dap-mode :ensure t)
+
+;; Automatically tangle our Emacs.org config file when we save it
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/Projects/Code/emacs-from-scratch/Emacs.org"))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+(require 'org-habit)
+(add-to-list 'org-modules 'org-habit)
+(setq org-habit-graph-column 60)
+
+
+(setq org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -321,13 +236,6 @@
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
-(use-package org
-  :hook (org-mode . efs/org-mode-setup)
-  :config
-  (setq org-ellipsis " ▾")
-  (efs/org-font-setup)
-  (setq org-agenda-files
-	'("~/Orgs/agenda.org")))
 
 (use-package org-bullets
   :after org
@@ -343,6 +251,13 @@
 (use-package visual-fill-column
   :hook (org-mode . efs/org-mode-visual-fill))
 
+(use-package org
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+  (efs/org-font-setup)
+  (setq org-agenda-files
+	'("~/Orgs/")))
 
 (use-package lsp-mode
   :ensure t
@@ -362,17 +277,23 @@
     (lsp-organize-imports)
     (lsp-format-buffer)))
 
-(package-install 'go-mode)
+(setq package-selected-packages 
+  '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+    ;; Optional packages
+    lsp-ui company hover))
 
-(add-hook 'go-mode-hook #'lsp-deferred)
-(add-hook 'go-mode-hook #'yas-minor-mode)
+(add-to-list 'lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
- (python . t)))
+(setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
 
-(setq org-confirm-babel-evaluate nil)
+(when (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (mapc #'package-install package-selected-packages))
+
+(add-hook 'dart-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024))
 
 (use-package go-mode
   :ensure t
@@ -390,7 +311,8 @@
 
 (provide 'gopls-config)
 
-;; Snippet
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook #'yas-minor-mode)
 
 (use-package smudge
   :ensure t)
@@ -399,36 +321,67 @@
 (define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
 (setq smudge-transport 'connect)
 
-(use-package doom-themes
-  :ensure t)
-
-(with-eval-after-load 'evil
-    (evil-define-key '(normal visual) 'lsp-mode
-      (kbd "SPC l") lsp-command-map)
-    (evil-normalize-keymaps))
-(load "~/.emacs.d/go-snippets/go-snippets.el" :after yasnippet)
-
-(defhydra yt-hydra/help (:color blue :hint nil)
-  "
-_mp_ magit-push #_mc_ magit-commit #_md_ magit diff #_mla_ magit diff #_mla_ magit status
-"
-  ;;Magit part
-  ("mp" magit-push)
-  ("mc" magit-commit)
-  ("md" magit-diff)
-  ("mla" magit-log-all)
-  ("ms" magit-status)
+(use-package company
+  :ensure t
+  :config (progn
+            ;; don't add any dely before trying to complete thing being typed
+            ;; the call/response to gopls is asynchronous so this should have little
+            ;; to no affect on edit latency
+            (setq company-idle-delay 0)
+            ;; start completing after a single character instead of 3
+            (setq company-minimum-prefix-length 1)
+            ;; align fields in completions
+            (setq company-tooltip-align-annotations t)
+            )
   )
-(global-set-key (kbd "<f1>") 'yt-hydra/help/body)
+  (company-mode 1)
 
-(setq org-capture-templates
-       '(("t" "todo" entry (file org-default-notes-file)
-	  "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
-	 ("m" "Meeting" entry (file org-default-notes-file)
-	  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
-	 ("d" "Diary" entry (file+datetree "~/org/diary.org")
-	  "* %?\n%U\n" :clock-in t :clock-resume t)
-	 ("i" "Idea" entry (file org-default-notes-file)
-	  "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
-	 ("n" "Next Task" entry (file+headline org-default-notes-file "Tasks")
-	  "** NEXT %? \nDEADLINE: %t") ))
+(use-package yasnippet :ensure t
+  :config
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/go-mode/")
+  (yas-global-mode 1)
+  )
+
+(use-package elcord :ensure t)
+(elcord-mode)
+
+(use-package emms :ensure t)
+(require 'emms-setup)
+(emms-all)
+(setq emms-player-list '(emms-player-mpv))
+(setq emms-source-file-default-directory "~/Music/")
+
+(use-package calfw :ensure t)
+(use-package calfw-org :ensure t)
+(use-package calfw-ical :ensure t)
+(use-package calfw-cal :ensure t)
+(require 'calfw)
+(require 'calfw-org)
+(require 'calfw-cal)
+(require 'calfw-ical)
+
+
+(defun my-open-calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:org-create-source "Green")  ; orgmode source
+    (cfw:howm-create-source "Blue")  ; howm source
+    (cfw:cal-create-source "Orange") ; diary source
+    (cfw:ical-create-source "Moon" "~/moon.ics" "Gray")  ; ICS source1
+    (cfw:ical-create-source "gcal" "https://calendar.google.com/calendar/ical/pramudyaarya%40ayoconnect.id/public/basic.ics" "IndianRed") ; google calendar ICS
+   )))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(neotree use-package dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

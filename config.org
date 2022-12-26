@@ -1,9 +1,9 @@
 #+TITLE: Emacs Config
-#+PROPERTY: header-args:emacs-lisp :tangle ./new-init.el
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 
 * Basic UI
 ** Basic
-#+begin_src emacs-lisp :tangle ./new-init.el
+#+begin_src emacs-lisp
   (setq user-full-name "Pramudya Arya Wicaksana")
 
   (menu-bar-mode -1)
@@ -22,11 +22,498 @@
   (setq indent-tabs-mode nil)
 
   (show-paren-mode t)
-
+  
 (require 'org-tempo)
 
 (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 #+end_src
 
-#+RESULTS
-** 
+#+RESULTS:
+: ((elc . src emacs-lisp) (a . export ascii) (c . center) (C . comment) (e . example) (E . export) (h . export html) (l . export latex) (q . quote) (s . src) (v . verse))
+
+** Dashboard
+#+begin_src emacs-lisp
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
+
+;; Set the title
+(setq dashboard-banner-logo-title "Personal Development Environment")
+;; Set the banner
+(setq dashboard-startup-banner "~/.emacs.d/hikaru.png" )
+;; Value can be
+;; - nil to display no banner
+;; - 'official which displays the official emacs logo
+;; - 'logo which displays an alternative emacs logo
+;; - 1, 2 or 3 which displays one of the text banners
+;; - "path/to/your/image.gif", "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever gif/image/text you would prefer
+;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
+
+;; Content is not centered by default. To center, set
+(setq dashboard-center-content t)
+
+;; To disable shortcut "jump" indicators for each section, set
+(setq dashboard-show-shortcuts nil)
+#+end_src
+
+#+RESULTS:
+
+** Doom modeline
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 15)))
+#+end_src
+
+#+RESULTS:
+
+** Ivy and counsel
+#+begin_src emacs-lisp
+(use-package ivy-rich
+  :ensure t
+  :init
+ (ivy-rich-mode 1))
+
+(use-package counsel
+  :ensure t)
+
+(general-define-key
+ "M-x" 'counsel-M-x)
+#+end_src
+
+#+RESULTS:
+
+** Icons
+#+begin_src emacs-lisp
+(use-package all-the-icons
+  :ensure t)
+#+end_src
+
+** Themes
+#+begin_src emacs-lisp
+(use-package doom-themes 
+:ensure t
+:init (load-theme 'doom-horizon t)
+)
+
+#+end_src
+** Shell
+#+begin_src emacs-lisp
+(setq explicit-shell-file-name "/usr/bin/zsh")
+(setq shell-file-name "zsh")
+(setq explicit-zsh-args '("--login" "--interactive"))
+(defun zsh-shell-mode-setup ()
+  (setq-local comint-process-echoes t))
+(add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
+#+end_src
+* Package
+** Melpa etc
+#+begin_src emacs-lisp
+;; Pakcages
+
+(require 'package)
+(setq package-archives
+	     '(("melpa" . "https://melpa.org/packages/")
+              ("org" . "https://orgmode.org/elpa/")
+              ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+
+(package-install 'use-package)
+(package-refresh-contents)
+
+;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package)
+   (package-install 'use-package))
+
+(require 'use-package)
+#+end_src
+
+#+RESULTS:
+: use-package
+
+* Keybinding
+** General
+#+begin_src emacs-lisp
+(use-package general
+  :ensure t)
+  :config
+  (general-create-definer rune/leader-keys
+    :keymaps '(normal visual emacs)
+    :prefix "SPC"
+    :global-prefix "SPC")
+
+  (rune/leader-keys
+    "t"  '(:ignore t :which-key "Toggles")
+    "tt" '(counsel-load-theme :which-key "Choose theme")
+    ";" '(counsel-M-x :which-key "Meta")
+    
+    "w"  '(:ignore t :which-key "Window")
+    "ws" '(evil-save :which-key "Save")
+    "wj" '(evil-window-down :which-key "Go Bottom")
+    "wk" '(evil-window-top :which-key "Go Top")
+    "wh" '(evil-window-left :which-key "Go Left")
+    "wl" '(evil-window-right :which-key "Go Right")
+    "wc" '(evil-window-split :which-key "Split")
+    "wv" '(evil-window-vsplit :which-key "Vsplit")
+    "wq" '(delete-window :which-key "Quit")
+    "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+
+    "g" '(:ignore t :which-key "Git")
+    "gs" '(magit-status :which-key "Magit")
+
+    "o" '(:ignore t :which-key "Open")
+    "ot" '(:ignore t :which-key "Treemacs")
+    "otd" '(treemacs-select-directory :which-key "Select Directory")
+    "ote" '(treemacs :which-key "Toggle Treemacs")
+
+    "oa" '(org-agenda :which-key "Org Agenda")
+    "oc" '(cfw:open-org-calendar :which-key "Calendar")
+    "oe" '(neotree :which-key "Neotree")
+    )
+#+end_src
+
+#+RESULTS:
+
+** Evil
+#+begin_src emacs-lisp
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+#+end_src
+
+** Paredit
+#+begin_src emacs-lisp
+(use-package paredit :ensure t)
+#+end_src
+
+#+RESULTS:
+
+** Evil collection
+#+begin_src emacs-lisp
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
+#+end_src
+
+#+RESULTS:
+: t
+
+** Which key
+#+begin_src emacs-lisp
+(use-package which-key
+  :ensure t
+  :diminish (which-key-mode)
+  :config
+  (setq which-key-idle-delay 0.3)
+  (which-key-mode 1))
+#+end_src
+
+#+RESULTS:
+: t
+
+** Hydra
+#+begin_src emacs-lisp
+(use-package hydra
+  :ensure t)
+
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(rune/leader-keys
+  "ts" '(hydra-text-scale/body :which-key "scale text"))
+#+end_src
+
+* Git
+** Magit
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status)
+  :custom
+  (magit-displey-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+#+end_src
+
+* Flycheck
+** Flycheck
+#+begin_src emacs-lisp
+(use-package flycheck :ensure t)
+#+end_src
+
+* Dap
+** Dap mode
+#+begin_src emacs-lisp
+(use-package dap-mode :ensure t)
+#+end_src
+
+* Org
+** Auto tangle
+#+begin_src emacs-lisp
+;; Automatically tangle our Emacs.org config file when we save it
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/Projects/Code/emacs-from-scratch/Emacs.org"))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+#+end_src
+
+#+RESULTS:
+| efs/org-mode-setup | efs/org-mode-visual-fill | org-bullets-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | (lambda nil (add-hook 'after-save-hook #'efs/org-babel-tangle-config)) |
+
+** Org setup
+#+begin_src emacs-lisp
+(require 'org-habit)
+(add-to-list 'org-modules 'org-habit)
+(setq org-habit-graph-column 60)
+
+
+(setq org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+(defun efs/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+;; Org Mode Configuration ------------------------------------------------------
+
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(defun efs/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . efs/org-mode-visual-fill))
+#+end_src
+
+#+RESULTS:
+| org-tempo-setup | org-bullets-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | efs/org-mode-visual-fill | efs/org-mode-setup |
+
+** Org mode
+#+begin_src emacs-lisp
+(use-package org
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+  (efs/org-font-setup)
+  (setq org-agenda-files
+	'("~/Orgs/")))
+#+end_src
+
+* LSP
+** LSP mode
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  (setq lsp-keymap-prefix (SPC l)
+  :config
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (lsp-enable-which-key-integration t))
+
+  (use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode))
+
+ (defun ime-go-before-save ()
+  (interactive)
+  (when lsp-mode
+    (lsp-organize-imports)
+    (lsp-format-buffer)))
+#+end_src
+
+#+RESULTS:
+: ime-go-before-save
+
+** LANGUAGES
+*** Dart 
+#+begin_src emacs-lisp
+(setq package-selected-packages 
+  '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+    ;; Optional packages
+    lsp-ui company hover))
+
+(add-to-list 'lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+
+(setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+
+(when (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (mapc #'package-install package-selected-packages))
+
+(add-hook 'dart-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024))
+#+end_src
+
+#+RESULTS:
+: 1048576
+
+*** GOLANG
+#+begin_src emacs-lisp
+(use-package go-mode
+  :ensure t
+  :bind (
+         ;; If you want to switch existing go-mode bindings to use lsp-mode/gopls instead
+         ;; uncomment the following lines
+         ;; ("C-c C-j" . lsp-find-definition)
+         ;; ("C-c C-d" . lsp-describe-thing-at-point)
+         )
+  :hook ((go-mode . lsp-deferred)
+         (before-save . lsp-format-buffer)
+         (before-save . lsp-organize-imports))
+  :config
+  (setq gofmt-command "goimports"))
+
+(provide 'gopls-config)
+
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook #'yas-minor-mode)
+#+end_src
+
+#+RESULTS:
+| yas-minor-mode | lsp-deferred | doom-modeline-env-setup-go |
+
+* Spotify
+** Smudge
+#+begin_src emacs-lisp
+(use-package smudge
+  :ensure t)
+(setq smudge-oauth2-client-secret "463ea6db52404a62a9fd97b9428da25a")
+(setq smudge-oauth2-client-id "d96cacf178594a9bab92506eea93b7bf")
+(define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
+(setq smudge-transport 'connect)
+#+end_src
+
+* Snippet
+** Company
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  :config (progn
+            ;; don't add any dely before trying to complete thing being typed
+            ;; the call/response to gopls is asynchronous so this should have little
+            ;; to no affect on edit latency
+            (setq company-idle-delay 0)
+            ;; start completing after a single character instead of 3
+            (setq company-minimum-prefix-length 1)
+            ;; align fields in completions
+            (setq company-tooltip-align-annotations t)
+            )
+  )
+  (company-mode 1)
+#+end_src
+** Yasnippet
+#+begin_src emacs-lisp
+(use-package yasnippet :ensure t
+  :config
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/go-mode/")
+  (yas-global-mode 1)
+  )
+#+end_src
+* Discord
+** Elcord
+#+begin_src emacs-lisp
+(use-package elcord :ensure t)
+(elcord-mode)
+#+end_src
+* Music Player
+** EMMS
+#+begin_src emacs-lisp
+(use-package emms :ensure t)
+(require 'emms-setup)
+(emms-all)
+(setq emms-player-list '(emms-player-mpv))
+(setq emms-source-file-default-directory "~/Music/")
+#+end_src
+
+#+RESULTS:
+: ~/Music
+* Calendar
+** Calfw
+#+begin_src emacs-lisp
+(use-package calfw :ensure t)
+(use-package calfw-org :ensure t)
+(use-package calfw-ical :ensure t)
+(use-package calfw-cal :ensure t)
+(require 'calfw)
+(require 'calfw-org)
+(require 'calfw-cal)
+(require 'calfw-ical)
+
+
+(defun my-open-calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:org-create-source "Green")  ; orgmode source
+    (cfw:howm-create-source "Blue")  ; howm source
+    (cfw:cal-create-source "Orange") ; diary source
+    (cfw:ical-create-source "Moon" "~/moon.ics" "Gray")  ; ICS source1
+    (cfw:ical-create-source "gcal" "https://calendar.google.com/calendar/ical/pramudyaarya%40ayoconnect.id/public/basic.ics" "IndianRed") ; google calendar ICS
+   ))) 
+#+end_src
+* Filetree
+** Neotree
+#+begin_src emacs-lisp
+(use-package neotree :ensure t)
+#+end_src

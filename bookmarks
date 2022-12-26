@@ -1,12 +1,22 @@
-;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("org-capture-last-stored"
+(("Sandbox"
+ (filename . "~/Sandbox/")
+ (front-context-string . "c\n  drwxrwxr-x  ")
+ (rear-context-string . "96 Nov  7 21:41 ")
+ (position . 255))
+("Org Agenda"
+ (filename . "~/Orgs/")
+ (front-context-string . "assets\n  -rw-rw-")
+ (rear-context-string . "96 Dec 24 18:22 ")
+ (position . 316))
+("org-capture-last-stored"
  (filename . "~/.notes")
- (front-context-string . "** TODO \n  [2022")
- (rear-context-string . "2022-12-23 Fri]\n")
- (position . 37))
+ (front-context-string . "*  TODO Do somet")
+ (rear-context-string . "2022-12-24 Sat>\n")
+ (position . 102))
 ("Ayoconnect"
  (filename . "~/Projects/ayopop/")
  (front-context-string . "SDDC.zip\n  -rw-r")
@@ -17,9 +27,4 @@
  (front-context-string . "request\n  -rw-r-")
  (rear-context-string . "96 Dec 22 10:57 ")
  (position . 1091))
-("CIMB Project"
- (filename . "~/Projects/ayopop/of-snap-direct-debit-cimb/main.go")
- (front-context-string . "	\"bitbucket.org/")
- (rear-context-string . "(\n	\"fmt\"\n	\"os\"\n\n")
- (position . 38))
 )
