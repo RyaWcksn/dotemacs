@@ -49,6 +49,15 @@
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward))
+
 (use-package ivy-rich
   :ensure t
   :init
@@ -128,6 +137,7 @@
 
     "oa" '(org-agenda :which-key "Org Agenda")
     "oc" '(cfw:open-org-calendar :which-key "Calendar")
+    "oe" '(neotree :which-key "Neotree")
     )
 
 (use-package evil
@@ -314,6 +324,18 @@
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook #'yas-minor-mode)
 
+(use-package go-fill-struct :ensure t)
+(use-package go-add-tags :ensure t)
+(use-package go-gen-test :ensure t)
+
+;; Golang related setup
+(rune/leader-keys
+  "c"  '(:ignore t :which-key "Code")
+  "cg"  '(:ignore t :which-key "Golang")
+  "cgg" '(go-add-tags :which-key "Go add tags"))
+  "cgf" '(go-fill-struct :which-key "Go fill struct"))
+  "cgt" '(go-gen-test-all :which-key "Go gen tests"))
+
 (use-package smudge
   :ensure t)
 (setq smudge-oauth2-client-secret "463ea6db52404a62a9fd97b9428da25a")
@@ -372,16 +394,11 @@
     (cfw:ical-create-source "Moon" "~/moon.ics" "Gray")  ; ICS source1
     (cfw:ical-create-source "gcal" "https://calendar.google.com/calendar/ical/pramudyaarya%40ayoconnect.id/public/basic.ics" "IndianRed") ; google calendar ICS
    )))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(neotree use-package dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+(use-package neotree :ensure t)
+(setq centaur-tabs-set-icons t)
+
+(setq centaur-tabs-set-bar 'under)
+;; Note: If you're not using Spacmeacs, in order for the underline to display
+;; correctly you must add the following line:
+(setq x-underline-at-descent-line t)

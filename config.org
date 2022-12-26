@@ -69,6 +69,21 @@
 
 #+RESULTS:
 
+** Tabbar
+#+begin_src emacs-lisp
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward))
+#+end_src
+
+#+RESULTS:
+: centaur-tabs-forward
+
 ** Ivy and counsel
 #+begin_src emacs-lisp
 (use-package ivy-rich
@@ -432,6 +447,26 @@
 #+RESULTS:
 | yas-minor-mode | lsp-deferred | doom-modeline-env-setup-go |
 
+#+begin_src emacs-lisp
+(use-package go-fill-struct :ensure t)
+(use-package go-add-tags :ensure t)
+(use-package go-gen-test :ensure t)
+
+;; Golang related setup
+(rune/leader-keys
+  "c"  '(:ignore t :which-key "Code")
+  "cg"  '(:ignore t :which-key "Golang")
+  "cgg" '(go-add-tags :which-key "Go add tags")
+  "cgf" '(go-fill-struct :which-key "Go fill struct")
+  "cgt" '(go-gen-test-all :which-key "Go gen tests"))
+  
+(custom-set-variables '(go-add-tags-style 'lower-camel-case))
+
+
+#+end_src
+
+#+RESULTS:
+
 * Spotify
 ** Smudge
 #+begin_src emacs-lisp
@@ -516,4 +551,13 @@
 ** Neotree
 #+begin_src emacs-lisp
 (use-package neotree :ensure t)
+(setq centaur-tabs-set-icons t)
+
+(setq centaur-tabs-set-bar 'under)
+;; Note: If you're not using Spacmeacs, in order for the underline to display
+;; correctly you must add the following line:
+(setq x-underline-at-descent-line t)
 #+end_src
+
+#+RESULTS:
+: t
