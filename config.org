@@ -1,3 +1,4 @@
+
 #+TITLE: Emacs Config
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 
@@ -26,10 +27,11 @@
 (require 'org-tempo)
 
 (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+
+(setq make-backup-files nil)
 #+end_src
 
 #+RESULTS:
-: ((elc . src emacs-lisp) (a . export ascii) (c . center) (C . comment) (e . example) (E . export) (h . export html) (l . export latex) (q . quote) (s . src) (v . verse))
 
 ** Dashboard
 #+begin_src emacs-lisp
@@ -96,6 +98,7 @@
 
 (general-define-key
  "M-x" 'counsel-M-x)
+ 
 #+end_src
 
 #+RESULTS:
@@ -210,6 +213,7 @@
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
+  
 #+end_src
 
 ** Paredit
@@ -378,7 +382,7 @@
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  (setq lsp-keymap-prefix (SPC l)
+  (setq lsp-keymap-prefix ("C-c l")
   :config
   (setq lsp-headerline-breadcrumb-enable nil)
   (lsp-enable-which-key-integration t))
@@ -495,7 +499,14 @@
             )
   )
   (company-mode 1)
+  
+(company-tng-configure-default)
+(add-to-list 'company-backends 'company-yasnippet)
 #+end_src
+
+#+RESULTS:
+| company-yasnippet | company-bbdb | company-eclim | company-semantic | company-clang | company-xcode | company-cmake | company-capf | company-files | (company-dabbrev-code company-gtags company-etags company-keywords) | company-oddmuse | company-dabbrev |
+
 ** Yasnippet
 #+begin_src emacs-lisp
 (use-package yasnippet :ensure t

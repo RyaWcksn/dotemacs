@@ -21,6 +21,8 @@
 
 (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
+(setq make-backup-files nil)
+
 (use-package dashboard
   :ensure t
   :config
@@ -272,7 +274,7 @@
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  (setq lsp-keymap-prefix (SPC l)
+  (setq lsp-keymap-prefix ("C-c l")
   :config
   (setq lsp-headerline-breadcrumb-enable nil)
   (lsp-enable-which-key-integration t))
@@ -332,9 +334,11 @@
 (rune/leader-keys
   "c"  '(:ignore t :which-key "Code")
   "cg"  '(:ignore t :which-key "Golang")
-  "cgg" '(go-add-tags :which-key "Go add tags"))
-  "cgf" '(go-fill-struct :which-key "Go fill struct"))
+  "cgg" '(go-add-tags :which-key "Go add tags")
+  "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
+  
+(custom-set-variables '(go-add-tags-style 'lower-camel-case))
 
 (use-package smudge
   :ensure t)
@@ -357,6 +361,9 @@
             )
   )
   (company-mode 1)
+  
+(company-tng-configure-default)
+(add-to-list 'company-backends 'company-yasnippet)
 
 (use-package yasnippet :ensure t
   :config
