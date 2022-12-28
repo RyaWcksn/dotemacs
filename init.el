@@ -1,27 +1,50 @@
 (setq user-full-name "Pramudya Arya Wicaksana")
 
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)
-  (tooltip-mode -1)
-  (global-hl-line-mode 1)
-  (setq make-backup-file nil
-        auto-save-default t)
-  (setq split-width-threshold 1 )
+       (menu-bar-mode -1)
+       (scroll-bar-mode -1)
+       (tool-bar-mode -1)
+       (tooltip-mode -1)
+       (global-hl-line-mode 1)
+       (setq make-backup-file nil
+             auto-save-default t)
+       (setq split-width-threshold 1 )
 
-  ;; Y/N
-  (defalias 'yes-or-no-p 'y-or-n-p)
+       ;; Y/N
+       (defalias 'yes-or-no-p 'y-or-n-p)
 
-  ;; tabs off
-  (setq indent-tabs-mode nil)
+       ;; tabs off
+       (setq indent-tabs-mode nil)
 
-  (show-paren-mode t)
-  
-(require 'org-tempo)
+       (show-paren-mode t)
 
-(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+     (require 'org-tempo)
 
-(setq make-backup-files nil)
+     (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+
+     (setq make-backup-files nil)
+
+    (use-package ligature :ensure t
+      )
+  (ligature-set-ligatures 't '("www"))
+
+  ;; Enable ligatures in programming modes                                                           
+  (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+                                       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+                                       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+                                       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+                                       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+                                       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+                                       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+                                       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+                                       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+                                       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+
+  (global-ligature-mode 't)
+  (use-package fira-code-mode
+    :ensure t
+  :custom (fira-code-mode-disabled-ligatures '("[]" "x"))  ; ligatures you don't want
+  :hook prog-mode)   
+(set-face-attribute 'default nil :height 180)
 
 (use-package dashboard
   :ensure t
@@ -117,7 +140,8 @@
     "t"  '(:ignore t :which-key "Toggles")
     "tt" '(counsel-load-theme :which-key "Choose theme")
     ";" '(counsel-M-x :which-key "Meta")
-    
+    "/" '(comment-region :which-key "Comment region")
+
     "w"  '(:ignore t :which-key "Window")
     "ws" '(evil-save :which-key "Save")
     "wj" '(evil-window-down :which-key "Go Bottom")
@@ -229,7 +253,7 @@
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
   ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.2)
+  (dolist (face '((org-level-1 . 1.4)
                   (org-level-2 . 1.1)
                   (org-level-3 . 1.05)
                   (org-level-4 . 1.0)
@@ -237,7 +261,7 @@
                   (org-level-6 . 1.1)
                   (org-level-7 . 1.1)
                   (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height (cdr face)))
+    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height 180 ))
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -289,14 +313,22 @@
     (lsp-organize-imports)
     (lsp-format-buffer)))
 
+(rune/leader-keys
+  "l"  '(:ignore t :which-key "LSP")
+  "lg" '(lsp-goto-type-definition :which-key "Go to definition")
+  "li" '(lsp-goto-implementation :which-key "Go to implementation")
+  "lc" '(lsp-execute-code-action :which-key "Code action")
+  "ll" '(lsp-avy-lens :which-key "Code lens")
+  "lr" '(lsp-rename :which-key "Code lens"))
+  "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
+  "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
+
 (setq package-selected-packages 
   '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
     ;; Optional packages
     lsp-ui company hover))
 
-(add-to-list 'lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
-
-(setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+;; (setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
 
 (when (cl-find-if-not #'package-installed-p package-selected-packages)
   (package-refresh-contents)
@@ -348,22 +380,22 @@
 (setq smudge-transport 'connect)
 
 (use-package company
-  :ensure t
-  :config (progn
-            ;; don't add any dely before trying to complete thing being typed
-            ;; the call/response to gopls is asynchronous so this should have little
-            ;; to no affect on edit latency
-            (setq company-idle-delay 0)
-            ;; start completing after a single character instead of 3
-            (setq company-minimum-prefix-length 1)
-            ;; align fields in completions
-            (setq company-tooltip-align-annotations t)
-            )
-  )
-  (company-mode 1)
+    :ensure t
+    :config (progn
+              ;; don't add any dely before trying to complete thing being typed
+              ;; the call/response to gopls is asynchronous so this should have little
+              ;; to no affect on edit latency
+              (setq company-idle-delay 0)
+              ;; start completing after a single character instead of 3
+              (setq company-minimum-prefix-length 1)
+              ;; align fields in completions
+              (setq company-tooltip-align-annotations t)
+              )
+    )
+    (company-mode 1)
   
-(company-tng-configure-default)
-(add-to-list 'company-backends 'company-yasnippet)
+  (company-tng-configure-default)
+(setq-local company-backends '((:separate company-capf company-yasnippet company-keywords)))
 
 (use-package yasnippet :ensure t
   :config

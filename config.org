@@ -5,30 +5,32 @@
 * Basic UI
 ** Basic
 #+begin_src emacs-lisp
-  (setq user-full-name "Pramudya Arya Wicaksana")
+       (setq user-full-name "Pramudya Arya Wicaksana")
 
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)
-  (tooltip-mode -1)
-  (global-hl-line-mode 1)
-  (setq make-backup-file nil
-        auto-save-default t)
-  (setq split-width-threshold 1 )
+       (menu-bar-mode -1)
+       (scroll-bar-mode -1)
+       (tool-bar-mode -1)
+       (tooltip-mode -1)
+       (global-hl-line-mode 1)
+       (setq make-backup-file nil
+             auto-save-default t)
+       (setq split-width-threshold 1 )
 
-  ;; Y/N
-  (defalias 'yes-or-no-p 'y-or-n-p)
+       ;; Y/N
+       (defalias 'yes-or-no-p 'y-or-n-p)
 
-  ;; tabs off
-  (setq indent-tabs-mode nil)
+       ;; tabs off
+       (setq indent-tabs-mode nil)
 
-  (show-paren-mode t)
-  
-(require 'org-tempo)
+       (show-paren-mode t)
 
-(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+     (require 'org-tempo)
 
-(setq make-backup-files nil)
+     (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+
+     (setq make-backup-files nil)
+
+      )
 #+end_src
 
 #+RESULTS:
@@ -155,42 +157,44 @@
 * Keybinding
 ** General
 #+begin_src emacs-lisp
-(use-package general
-  :ensure t)
-  :config
-  (general-create-definer rune/leader-keys
-    :keymaps '(normal visual emacs)
-    :prefix "SPC"
-    :global-prefix "SPC")
+  (use-package general
+    :ensure t)
+    :config
+    (general-create-definer rune/leader-keys
+      :keymaps '(normal visual emacs)
+      :prefix "SPC"
+      :global-prefix "SPC")
 
-  (rune/leader-keys
-    "t"  '(:ignore t :which-key "Toggles")
-    "tt" '(counsel-load-theme :which-key "Choose theme")
-    ";" '(counsel-M-x :which-key "Meta")
-    
-    "w"  '(:ignore t :which-key "Window")
-    "ws" '(evil-save :which-key "Save")
-    "wj" '(evil-window-down :which-key "Go Bottom")
-    "wk" '(evil-window-top :which-key "Go Top")
-    "wh" '(evil-window-left :which-key "Go Left")
-    "wl" '(evil-window-right :which-key "Go Right")
-    "wc" '(evil-window-split :which-key "Split")
-    "wv" '(evil-window-vsplit :which-key "Vsplit")
-    "wq" '(delete-window :which-key "Quit")
-    "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+    (rune/leader-keys
+      "t"  '(:ignore t :which-key "Toggles")
+      "tt" '(counsel-load-theme :which-key "Choose theme")
+      ";" '(counsel-M-x :which-key "Meta")
+      "/" '(comment-region :which-key "Comment region")
 
-    "g" '(:ignore t :which-key "Git")
-    "gs" '(magit-status :which-key "Magit")
+      "w"  '(:ignore t :which-key "Window")
+      "ws" '(evil-save :which-key "Save")
+      "wj" '(evil-window-down :which-key "Go Bottom")
+      "wk" '(evil-window-top :which-key "Go Top")
+      "wh" '(evil-window-left :which-key "Go Left")
+      "wl" '(evil-window-right :which-key "Go Right")
+      "wc" '(evil-window-split :which-key "Split")
+      "wv" '(evil-window-vsplit :which-key "Vsplit")
+      "wq" '(delete-window :which-key "Quit")
+      "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
 
-    "o" '(:ignore t :which-key "Open")
-    "ot" '(:ignore t :which-key "Treemacs")
-    "otd" '(treemacs-select-directory :which-key "Select Directory")
-    "ote" '(treemacs :which-key "Toggle Treemacs")
+      "g" '(:ignore t :which-key "Git")
+      "gs" '(magit-status :which-key "Magit")
 
-    "oa" '(org-agenda :which-key "Org Agenda")
-    "oc" '(cfw:open-org-calendar :which-key "Calendar")
-    "oe" '(neotree :which-key "Neotree")
-    )
+      "o" '(:ignore t :which-key "Open")
+      "ot" '(:ignore t :which-key "Treemacs")
+      "otd" '(treemacs-select-directory :which-key "Select Directory")
+      "ote" '(treemacs :which-key "Toggle Treemacs")
+
+      "oa" '(org-agenda :which-key "Org Agenda")
+      "oc" '(cfw:open-org-calendar :which-key "Calendar")
+      "oe" '(neotree :which-key "Neotree")
+      )
+
 #+end_src
 
 #+RESULTS:
@@ -327,7 +331,7 @@
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
   ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.2)
+  (dolist (face '((org-level-1 . 1.4)
                   (org-level-2 . 1.1)
                   (org-level-3 . 1.05)
                   (org-level-4 . 1.0)
@@ -335,7 +339,7 @@
                   (org-level-6 . 1.1)
                   (org-level-7 . 1.1)
                   (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height (cdr face)))
+    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height 180 ))
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -363,7 +367,7 @@
 #+end_src
 
 #+RESULTS:
-| org-tempo-setup | org-bullets-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | efs/org-mode-visual-fill | efs/org-mode-setup |
+| efs/org-mode-setup | efs/org-mode-visual-fill | org-bullets-mode | (lambda nil (add-hook 'after-save-hook #'efs/org-babel-tangle-config)) | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-tempo-setup | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
 ** Org mode
 #+begin_src emacs-lisp
@@ -401,6 +405,22 @@
 #+RESULTS:
 : ime-go-before-save
 
+** Mapping
+#+begin_src emacs-lisp
+(rune/leader-keys
+  "l"  '(:ignore t :which-key "LSP")
+  "lg" '(lsp-goto-type-definition :which-key "Go to definition")
+  "li" '(lsp-goto-implementation :which-key "Go to implementation")
+  "lc" '(lsp-execute-code-action :which-key "Code action")
+  "ll" '(lsp-avy-lens :which-key "Code lens")
+  "lr" '(lsp-rename :which-key "Code lens"))
+  "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
+  "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
+#+end_src
+
+#+RESULTS:
+| lsp-ui-peek-find-implementation | :which-key | Code implement |
+
 ** LANGUAGES
 *** Dart 
 #+begin_src emacs-lisp
@@ -409,9 +429,7 @@
     ;; Optional packages
     lsp-ui company hover))
 
-(add-to-list 'lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
-
-(setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+;; (setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
 
 (when (cl-find-if-not #'package-installed-p package-selected-packages)
   (package-refresh-contents)
@@ -485,27 +503,27 @@
 * Snippet
 ** Company
 #+begin_src emacs-lisp
-(use-package company
-  :ensure t
-  :config (progn
-            ;; don't add any dely before trying to complete thing being typed
-            ;; the call/response to gopls is asynchronous so this should have little
-            ;; to no affect on edit latency
-            (setq company-idle-delay 0)
-            ;; start completing after a single character instead of 3
-            (setq company-minimum-prefix-length 1)
-            ;; align fields in completions
-            (setq company-tooltip-align-annotations t)
-            )
-  )
-  (company-mode 1)
+  (use-package company
+    :ensure t
+    :config (progn
+              ;; don't add any dely before trying to complete thing being typed
+              ;; the call/response to gopls is asynchronous so this should have little
+              ;; to no affect on edit latency
+              (setq company-idle-delay 0)
+              ;; start completing after a single character instead of 3
+              (setq company-minimum-prefix-length 1)
+              ;; align fields in completions
+              (setq company-tooltip-align-annotations t)
+              )
+    )
+    (company-mode 1)
   
-(company-tng-configure-default)
-(add-to-list 'company-backends 'company-yasnippet)
+  (company-tng-configure-default)
+(setq-local company-backends '((:separate company-capf company-yasnippet company-keywords)))
 #+end_src
 
 #+RESULTS:
-| company-yasnippet | company-bbdb | company-eclim | company-semantic | company-clang | company-xcode | company-cmake | company-capf | company-files | (company-dabbrev-code company-gtags company-etags company-keywords) | company-oddmuse | company-dabbrev |
+| :separate | company-capf | company-yasnippet | company-keywords |
 
 ** Yasnippet
 #+begin_src emacs-lisp
