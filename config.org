@@ -1,36 +1,38 @@
-
 #+TITLE: Emacs Config
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 
 * Basic UI
 ** Basic
 #+begin_src emacs-lisp
-       (setq user-full-name "Pramudya Arya Wicaksana")
+  (setq user-full-name "Pramudya Arya Wicaksana")
 
-       (menu-bar-mode -1)
-       (scroll-bar-mode -1)
-       (tool-bar-mode -1)
-       (tooltip-mode -1)
-       (global-hl-line-mode 1)
-       (setq make-backup-file nil
-             auto-save-default t)
-       (setq split-width-threshold 1 )
+  (setq gc-cons-threshold (* 50 1000 1000))
 
-       ;; Y/N
-       (defalias 'yes-or-no-p 'y-or-n-p)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (global-hl-line-mode 1)
+  (setq make-backup-file nil
+        auto-save-default t)
+  (setq split-width-threshold 1 )
 
-       ;; tabs off
-       (setq indent-tabs-mode nil)
+  ;; Y/N
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
-       (show-paren-mode t)
+  ;; tabs off
+  (setq indent-tabs-mode nil)
 
-     (require 'org-tempo)
+  (show-paren-mode t)
 
-     (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+  (require 'org-tempo)
 
-     (setq make-backup-files nil)
+  (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-      )
+  (setq make-backup-files nil)
+
+  (set-face-attribute 'default nil :height 140)
+
 #+end_src
 
 #+RESULTS:
@@ -81,8 +83,8 @@
   :config
   (centaur-tabs-mode t)
   :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
+  ("C-c <left>" . centaur-tabs-backward)
+  ("C-c <right>" . centaur-tabs-forward))
 #+end_src
 
 #+RESULTS:
@@ -131,24 +133,24 @@
 * Package
 ** Melpa etc
 #+begin_src emacs-lisp
-;; Pakcages
+  ;; Pakcages
 
-(require 'package)
-(setq package-archives
-	     '(("melpa" . "https://melpa.org/packages/")
-              ("org" . "https://orgmode.org/elpa/")
-              ("elpa" . "https://elpa.gnu.org/packages/")))
+  (require 'package)
+  (setq package-archives
+               '(("melpa" . "https://melpa.org/packages/")
+                ("org" . "https://orgmode.org/elpa/")
+                ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(package-initialize)
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
 
-(package-install 'use-package)
-(package-refresh-contents)
+    ;; Initialize use-package on non-Linux platforms
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
 
-;; Initialize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package)
-   (package-install 'use-package))
-
-(require 'use-package)
+  (require 'use-package)
+  (setq use-package-always-ensure t)
 #+end_src
 
 #+RESULTS:
@@ -193,6 +195,9 @@
       "oa" '(org-agenda :which-key "Org Agenda")
       "oc" '(cfw:open-org-calendar :which-key "Calendar")
       "oe" '(neotree :which-key "Neotree")
+
+      "C-c [" '(hs-hide-block :which-key "Fold")
+      "C-c ]" '(hs-show-block :which-key "Unfold")
       )
 
 #+end_src
@@ -383,23 +388,24 @@
 * LSP
 ** LSP mode
 #+begin_src emacs-lisp
-(use-package lsp-mode
-  :ensure t
-  :commands (lsp lsp-deferred)
-  (setq lsp-keymap-prefix ("C-c l")
-  :config
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (lsp-enable-which-key-integration t))
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    (setq lsp-keymap-prefix ("C-c l")
+          :config
+          (setq lsp-headerline-breadcrumb-enable nil)
+          (lsp-enable-which-key-integration t))
 
-  (use-package lsp-ui
-    :ensure t
-    :commands lsp-ui-mode))
+    (use-package lsp-ui
+      :ensure t
+      :commands lsp-ui-mode))
 
- (defun ime-go-before-save ()
-  (interactive)
-  (when lsp-mode
-    (lsp-organize-imports)
-    (lsp-format-buffer)))
+  (defun ime-go-before-save ()
+    (interactive)
+    (when lsp-mode
+      (lsp-organize-imports)
+      (lsp-format-buffer)))
+
+  (setq lsp-completion-provider :none)
 #+end_src
 
 #+RESULTS:
@@ -413,13 +419,12 @@
   "li" '(lsp-goto-implementation :which-key "Go to implementation")
   "lc" '(lsp-execute-code-action :which-key "Code action")
   "ll" '(lsp-avy-lens :which-key "Code lens")
-  "lr" '(lsp-rename :which-key "Code lens"))
+  "lr" '(lsp-rename :which-key "Code lens")
   "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
   "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
 #+end_src
 
 #+RESULTS:
-| lsp-ui-peek-find-implementation | :which-key | Code implement |
 
 ** LANGUAGES
 *** Dart 
@@ -504,26 +509,24 @@
 ** Company
 #+begin_src emacs-lisp
   (use-package company
-    :ensure t
-    :config (progn
-              ;; don't add any dely before trying to complete thing being typed
-              ;; the call/response to gopls is asynchronous so this should have little
-              ;; to no affect on edit latency
-              (setq company-idle-delay 0)
-              ;; start completing after a single character instead of 3
-              (setq company-minimum-prefix-length 1)
-              ;; align fields in completions
-              (setq company-tooltip-align-annotations t)
-              )
-    )
-    (company-mode 1)
-  
-  (company-tng-configure-default)
-(setq-local company-backends '((:separate company-capf company-yasnippet company-keywords)))
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+         ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+         ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+
+  (setq company-backends '((company-capf company-yasnippet)))
 #+end_src
 
 #+RESULTS:
-| :separate | company-capf | company-yasnippet | company-keywords |
+| company-capf | company-yasnippet |
 
 ** Yasnippet
 #+begin_src emacs-lisp
