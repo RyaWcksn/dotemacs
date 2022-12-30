@@ -5,6 +5,8 @@
 ** Basic
 #+begin_src emacs-lisp
   (setq user-full-name "Pramudya Arya Wicaksana")
+  
+  (setq byte-compile-warnings '(cl-functions))
 
   (setq gc-cons-threshold (* 50 1000 1000))
 
@@ -32,10 +34,12 @@
   (setq make-backup-files nil)
 
   (set-face-attribute 'default nil :height 140)
+  (hl-line-mode)
 
 #+end_src
 
 #+RESULTS:
+: t
 
 ** Dashboard
 #+begin_src emacs-lisp
@@ -188,9 +192,6 @@
       "gs" '(magit-status :which-key "Magit")
 
       "o" '(:ignore t :which-key "Open")
-      "ot" '(:ignore t :which-key "Treemacs")
-      "otd" '(treemacs-select-directory :which-key "Select Directory")
-      "ote" '(treemacs :which-key "Toggle Treemacs")
 
       "oa" '(org-agenda :which-key "Org Agenda")
       "oc" '(cfw:open-org-calendar :which-key "Calendar")
@@ -388,17 +389,14 @@
 * LSP
 ** LSP mode
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    (setq lsp-keymap-prefix ("C-c l")
-          :config
-          (setq lsp-headerline-breadcrumb-enable nil)
-          (lsp-enable-which-key-integration t))
-
-    (use-package lsp-ui
-      :ensure t
-      :commands lsp-ui-mode))
-
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
   (defun ime-go-before-save ()
     (interactive)
     (when lsp-mode
@@ -409,7 +407,7 @@
 #+end_src
 
 #+RESULTS:
-: ime-go-before-save
+: :none
 
 ** Mapping
 #+begin_src emacs-lisp
@@ -433,12 +431,11 @@
   '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
     ;; Optional packages
     lsp-ui company hover))
+    
+(use-package dart-mode)
 
-;; (setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+(setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
 
-(when (cl-find-if-not #'package-installed-p package-selected-packages)
-  (package-refresh-contents)
-  (mapc #'package-install package-selected-packages))
 
 (add-hook 'dart-mode-hook 'lsp)
 
@@ -532,15 +529,18 @@
 #+begin_src emacs-lisp
 (use-package yasnippet :ensure t
   :config
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/go-mode/")
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/")
   (yas-global-mode 1)
   )
 #+end_src
+
+#+RESULTS:
+: t
+
 * Discord
 ** Elcord
 #+begin_src emacs-lisp
 (use-package elcord :ensure t)
-(elcord-mode)
 #+end_src
 * Music Player
 ** EMMS
