@@ -296,6 +296,34 @@
 #+end_src
 
 * Org
+** Babel
+#+begin_src emacs-lisp
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((python . t)
+       (shell . t)
+       (js . t)
+       ))
+#+end_src
+
+#+RESULTS:
+
+** Org daily habit
+#+begin_src emacs-lisp
+(setq org-agenda-custom-commands
+      '(("h" "Daily habits" 
+         ((agenda ""))
+         ((org-agenda-show-log t)
+          (org-agenda-ndays 7)
+          (org-agenda-log-mode-items '(state))
+          (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp ":DAILY:"))))
+        ;; other commands here
+        ))
+#+end_src
+
+#+RESULTS:
+| h | Daily habits | ((agenda )) | ((org-agenda-show-log t) (org-agenda-ndays 7) (org-agenda-log-mode-items '(state)) (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp :DAILY:))) |
+
 ** Auto tangle
 #+begin_src emacs-lisp
 ;; Automatically tangle our Emacs.org config file when we save it
@@ -427,20 +455,27 @@
 ** LANGUAGES
 *** Dart 
 #+begin_src emacs-lisp
-(setq package-selected-packages 
-  '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
-    ;; Optional packages
-    lsp-ui company hover))
-    
-(use-package dart-mode)
+    (setq package-selected-packages 
+      '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+        ;; Optional packages
+        lsp-ui company hover))
 
-(setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+    (use-package dart-mode)
+
+  ;; export ANDROID_HOME=$HOME/Android
+  ;; export PATH=$ANDROID_HOME/cmdline-tools/tools/bin/:$PATH
+  ;; export PATH=$ANDROID_HOME/platform-tools/:$PATH
+
+  ;; export PATH="$PATH:$HOME/Android/flutter/bin/"
 
 
-(add-hook 'dart-mode-hook 'lsp)
+    (setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
 
-(setq gc-cons-threshold (* 100 1024 1024)
-      read-process-output-max (* 1024 1024))
+
+    (add-hook 'dart-mode-hook 'lsp)
+
+    (setq gc-cons-threshold (* 100 1024 1024)
+          read-process-output-max (* 1024 1024))
 #+end_src
 
 #+RESULTS:
@@ -515,9 +550,6 @@
     :custom
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
 
   (setq company-backends '((company-capf company-yasnippet)))
 #+end_src

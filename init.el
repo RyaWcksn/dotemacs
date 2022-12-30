@@ -1,50 +1,34 @@
 (setq user-full-name "Pramudya Arya Wicaksana")
 
-       (menu-bar-mode -1)
-       (scroll-bar-mode -1)
-       (tool-bar-mode -1)
-       (tooltip-mode -1)
-       (global-hl-line-mode 1)
-       (setq make-backup-file nil
-             auto-save-default t)
-       (setq split-width-threshold 1 )
+(setq byte-compile-warnings '(cl-functions))
 
-       ;; Y/N
-       (defalias 'yes-or-no-p 'y-or-n-p)
+(setq gc-cons-threshold (* 50 1000 1000))
 
-       ;; tabs off
-       (setq indent-tabs-mode nil)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(global-hl-line-mode 1)
+(setq make-backup-file nil
+      auto-save-default t)
+(setq split-width-threshold 1 )
 
-       (show-paren-mode t)
+;; Y/N
+(defalias 'yes-or-no-p 'y-or-n-p)
 
-     (require 'org-tempo)
+;; tabs off
+(setq indent-tabs-mode nil)
 
-     (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+(show-paren-mode t)
 
-     (setq make-backup-files nil)
+(require 'org-tempo)
 
-    (use-package ligature :ensure t
-      )
-  (ligature-set-ligatures 't '("www"))
+(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-  ;; Enable ligatures in programming modes                                                           
-  (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-                                       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-                                       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-                                       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-                                       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-                                       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-                                       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-                                       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-                                       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-                                       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+(setq make-backup-files nil)
 
-  (global-ligature-mode 't)
-  (use-package fira-code-mode
-    :ensure t
-  :custom (fira-code-mode-disabled-ligatures '("[]" "x"))  ; ligatures you don't want
-  :hook prog-mode)   
-(set-face-attribute 'default nil :height 180)
+(set-face-attribute 'default nil :height 140)
+(hl-line-mode)
 
 (use-package dashboard
   :ensure t
@@ -80,8 +64,8 @@
   :config
   (centaur-tabs-mode t)
   :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
+  ("C-c <left>" . centaur-tabs-backward)
+  ("C-c <right>" . centaur-tabs-forward))
 
 (use-package ivy-rich
   :ensure t
@@ -113,20 +97,20 @@
 
 (require 'package)
 (setq package-archives
-	     '(("melpa" . "https://melpa.org/packages/")
+             '(("melpa" . "https://melpa.org/packages/")
               ("org" . "https://orgmode.org/elpa/")
               ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
 
-(package-install 'use-package)
-(package-refresh-contents)
-
-;; Initialize use-package on non-Linux platforms
+  ;; Initialize use-package on non-Linux platforms
 (unless (package-installed-p 'use-package)
-   (package-install 'use-package))
+  (package-install 'use-package))
 
 (require 'use-package)
+(setq use-package-always-ensure t)
 
 (use-package general
   :ensure t)
@@ -157,13 +141,13 @@
     "gs" '(magit-status :which-key "Magit")
 
     "o" '(:ignore t :which-key "Open")
-    "ot" '(:ignore t :which-key "Treemacs")
-    "otd" '(treemacs-select-directory :which-key "Select Directory")
-    "ote" '(treemacs :which-key "Toggle Treemacs")
 
     "oa" '(org-agenda :which-key "Org Agenda")
     "oc" '(cfw:open-org-calendar :which-key "Calendar")
     "oe" '(neotree :which-key "Neotree")
+
+    "C-c [" '(hs-hide-block :which-key "Fold")
+    "C-c ]" '(hs-show-block :which-key "Unfold")
     )
 
 (use-package evil
@@ -219,6 +203,16 @@
 (use-package flycheck :ensure t)
 
 (use-package dap-mode :ensure t)
+
+(setq org-agenda-custom-commands
+      '(("h" "Daily habits" 
+         ((agenda ""))
+         ((org-agenda-show-log t)
+          (org-agenda-ndays 7)
+          (org-agenda-log-mode-items '(state))
+          (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp ":DAILY:"))))
+        ;; other commands here
+        ))
 
 ;; Automatically tangle our Emacs.org config file when we save it
 (defun efs/org-babel-tangle-config ()
@@ -296,22 +290,20 @@
 	'("~/Orgs/")))
 
 (use-package lsp-mode
-  :ensure t
-  :commands (lsp lsp-deferred)
-  (setq lsp-keymap-prefix ("C-c l")
-  :config
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (lsp-enable-which-key-integration t))
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+  (defun ime-go-before-save ()
+    (interactive)
+    (when lsp-mode
+      (lsp-organize-imports)
+      (lsp-format-buffer)))
 
-  (use-package lsp-ui
-    :ensure t
-    :commands lsp-ui-mode))
-
- (defun ime-go-before-save ()
-  (interactive)
-  (when lsp-mode
-    (lsp-organize-imports)
-    (lsp-format-buffer)))
+  (setq lsp-completion-provider :none)
 
 (rune/leader-keys
   "l"  '(:ignore t :which-key "LSP")
@@ -319,25 +311,31 @@
   "li" '(lsp-goto-implementation :which-key "Go to implementation")
   "lc" '(lsp-execute-code-action :which-key "Code action")
   "ll" '(lsp-avy-lens :which-key "Code lens")
-  "lr" '(lsp-rename :which-key "Code lens"))
+  "lr" '(lsp-rename :which-key "Code lens")
   "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
   "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
 
 (setq package-selected-packages 
-  '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
-    ;; Optional packages
-    lsp-ui company hover))
+    '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+      ;; Optional packages
+      lsp-ui company hover))
 
-;; (setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+  (use-package dart-mode)
 
-(when (cl-find-if-not #'package-installed-p package-selected-packages)
-  (package-refresh-contents)
-  (mapc #'package-install package-selected-packages))
+;; export ANDROID_HOME=$HOME/Android
+;; export PATH=$ANDROID_HOME/cmdline-tools/tools/bin/:$PATH
+;; export PATH=$ANDROID_HOME/platform-tools/:$PATH
 
-(add-hook 'dart-mode-hook 'lsp)
+;; export PATH="$PATH:$HOME/Android/flutter/bin/"
 
-(setq gc-cons-threshold (* 100 1024 1024)
-      read-process-output-max (* 1024 1024))
+
+  (setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+
+
+  (add-hook 'dart-mode-hook 'lsp)
+
+  (setq gc-cons-threshold (* 100 1024 1024)
+        read-process-output-max (* 1024 1024))
 
 (use-package go-mode
   :ensure t
@@ -380,31 +378,25 @@
 (setq smudge-transport 'connect)
 
 (use-package company
-    :ensure t
-    :config (progn
-              ;; don't add any dely before trying to complete thing being typed
-              ;; the call/response to gopls is asynchronous so this should have little
-              ;; to no affect on edit latency
-              (setq company-idle-delay 0)
-              ;; start completing after a single character instead of 3
-              (setq company-minimum-prefix-length 1)
-              ;; align fields in completions
-              (setq company-tooltip-align-annotations t)
-              )
-    )
-    (company-mode 1)
-  
-  (company-tng-configure-default)
-(setq-local company-backends '((:separate company-capf company-yasnippet company-keywords)))
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+       ("<tab>" . company-complete-selection))
+      (:map lsp-mode-map
+       ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(setq company-backends '((company-capf company-yasnippet)))
 
 (use-package yasnippet :ensure t
   :config
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/go-mode/")
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/")
   (yas-global-mode 1)
   )
 
 (use-package elcord :ensure t)
-(elcord-mode)
 
 (use-package emms :ensure t)
 (require 'emms-setup)
