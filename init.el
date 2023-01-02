@@ -30,7 +30,7 @@
   (global-hl-line-mode 1)
   (setq make-backup-file nil
         auto-save-default t)
-  (setq split-width-threshold 1 )
+  (setq split-width-threshold 0 )
 
   ;; Y/N
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -159,6 +159,10 @@
 
     "C-c [" '(hs-hide-block :which-key "Fold")
     "C-c ]" '(hs-show-block :which-key "Unfold")
+
+    "<left>" '(centaur-tabs-backward :which-key "Previous tab")
+    "<right>" '(centaur-tabs-forward :which-key "Next tab")
+
     )
 
 (use-package evil
@@ -309,6 +313,8 @@
 )
 (add-hook 'org-mode-hook 'nolinum)
 
+(use-package org-roam)
+
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -388,14 +394,7 @@
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
   
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(go-add-tags-style 'lower-camel-case)
- '(package-selected-packages
-   '(org-roam projectile pdf-tools dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
+(custom-set-variables '(go-add-tags-style 'lower-camel-case))
 
 (use-package smudge
   :ensure t)
@@ -467,9 +466,3 @@
   :config (projectile-mode)
   :custom ((projectile-completion-system 'ivy)))
   ;; NOTE: Set this to the folder where you keep your Git repos!
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
