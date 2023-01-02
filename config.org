@@ -1,3 +1,4 @@
+#+author: PRAMUDYA ARYA WICAKSANA
 #+TITLE: Emacs Config
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 
@@ -30,44 +31,49 @@
 * Basic UI
 ** Basic
 #+begin_src emacs-lisp
-  (setq user-full-name "Pramudya Arya Wicaksana")
-  
-  (setq byte-compile-warnings '(cl-functions))
+    (setq user-full-name "Pramudya Arya Wicaksana")
 
-  (setq gc-cons-threshold (* 50 1000 1000))
+    (setq byte-compile-warnings '(cl-functions))
 
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)
-  (tooltip-mode -1)
-  (global-hl-line-mode 1)
-  (setq make-backup-file nil
-        auto-save-default t)
-  (setq split-width-threshold 1 )
+    (setq gc-cons-threshold (* 50 1000 1000))
 
-  ;; Y/N
-  (defalias 'yes-or-no-p 'y-or-n-p)
+    (menu-bar-mode -1)
+    (scroll-bar-mode -1)
+    (tool-bar-mode -1)
+    (tooltip-mode -1)
+    (global-hl-line-mode 1)
+    (setq make-backup-file nil
+          auto-save-default t)
+    (setq split-width-threshold 1 )
 
-  ;; tabs off
-  (setq indent-tabs-mode nil)
+    ;; Y/N
+    (defalias 'yes-or-no-p 'y-or-n-p)
 
-  (show-paren-mode t)
+    ;; tabs off
+    (setq indent-tabs-mode nil)
 
-  (require 'org-tempo)
+    (show-paren-mode t)
 
-  (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+    (require 'org-tempo)
 
-  (setq make-backup-files nil)
+    (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-  (set-face-attribute 'default nil :height 120)
-  (display-battery-mode 1)
-  (display-time-mode 1)
-  (hl-line-mode)
+    (setq make-backup-files nil)
+
+    (set-face-attribute 'default nil :height 120)
+    (display-battery-mode 1)
+    (display-time-mode 1)
+    (hl-line-mode)
+
+  (global-display-line-numbers-mode 1)
+  (setq display-line-numbers-type 'relative)
+
+
 
 #+end_src
 
 #+RESULTS:
-: t
+: relative
 
 ** Dashboard
 #+begin_src emacs-lisp
@@ -190,6 +196,12 @@
       "wq" '(delete-window :which-key "Quit")
       "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
 
+      "p"  '(:ignore t :which-key "Projectile")
+      "pp" '(projectile-command-map :which-key "Command map")
+
+      "f"  '(:ignore t :which-key "Find")
+      "ff" '(projectile-find-file :which-key "Find File")
+
       "g" '(:ignore t :which-key "Git")
       "gs" '(magit-status :which-key "Magit")
 
@@ -201,7 +213,12 @@
 
       "C-c [" '(hs-hide-block :which-key "Fold")
       "C-c ]" '(hs-show-block :which-key "Unfold")
+
+      "<left>" '(centaur-tabs-backward :which-key "Previous tab")
+      "<right>" '(centaur-tabs-forward :which-key "Next tab")
+
       )
+
 
 #+end_src
 
@@ -405,14 +422,21 @@
 
 ** Org mode
 #+begin_src emacs-lisp
-(use-package org
-  :hook (org-mode . efs/org-mode-setup)
-  :config
-  (setq org-ellipsis " ▾")
-  (efs/org-font-setup)
-  (setq org-agenda-files
-	'("~/Orgs/")))
+    (use-package org
+      :hook (org-mode . efs/org-mode-setup)
+      :config
+      (setq org-ellipsis " ▾")
+      (efs/org-font-setup)
+      (setq org-agenda-files
+            '("~/Orgs/")))
+  (defun nolinum ()
+    (global-display-line-numbers-mode 0)
+  )
+  (add-hook 'org-mode-hook 'nolinum)
 #+end_src
+
+#+RESULTS:
+| nolinum | efs/org-mode-setup | efs/org-mode-visual-fill | org-bullets-mode | (lambda nil (add-hook 'after-save-hook #'efs/org-babel-tangle-config)) | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-tempo-setup | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
 * LSP
 ** LSP mode
@@ -614,13 +638,26 @@
 * Filetree
 ** Neotree
 #+begin_src emacs-lisp
-(use-package neotree :ensure t)
-(setq centaur-tabs-set-icons t)
+  (use-package neotree :ensure t)
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq centaur-tabs-set-icons t)
 
-(setq centaur-tabs-set-bar 'under)
-;; Note: If you're not using Spacmeacs, in order for the underline to display
-;; correctly you must add the following line:
-(setq x-underline-at-descent-line t)
+  (setq centaur-tabs-set-bar 'under)
+  ;; Note: If you're not using Spacmeacs, in order for the underline to display
+  ;; correctly you must add the following line:
+  (setq x-underline-at-descent-line t)
+#+end_src
+
+#+RESULTS:
+: t
+
+* Projectile
+#+begin_src emacs-lisp
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy)))
+  ;; NOTE: Set this to the folder where you keep your Git repos!
 #+end_src
 
 #+RESULTS:

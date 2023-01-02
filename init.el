@@ -1,34 +1,58 @@
+;; Pakcages
+
+(require 'package)
+(setq package-archives
+             '(("melpa" . "https://melpa.org/packages/")
+              ("org" . "https://orgmode.org/elpa/")
+              ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+
+  ;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t)
+
 (setq user-full-name "Pramudya Arya Wicaksana")
 
-(setq byte-compile-warnings '(cl-functions))
+  (setq byte-compile-warnings '(cl-functions))
 
-(setq gc-cons-threshold (* 50 1000 1000))
+  (setq gc-cons-threshold (* 50 1000 1000))
 
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-(global-hl-line-mode 1)
-(setq make-backup-file nil
-      auto-save-default t)
-(setq split-width-threshold 1 )
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (global-hl-line-mode 1)
+  (setq make-backup-file nil
+        auto-save-default t)
+  (setq split-width-threshold 1 )
 
-;; Y/N
-(defalias 'yes-or-no-p 'y-or-n-p)
+  ;; Y/N
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; tabs off
-(setq indent-tabs-mode nil)
+  ;; tabs off
+  (setq indent-tabs-mode nil)
 
-(show-paren-mode t)
+  (show-paren-mode t)
 
-(require 'org-tempo)
+  (require 'org-tempo)
 
-(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-(setq make-backup-files nil)
+  (setq make-backup-files nil)
 
-(set-face-attribute 'default nil :height 140)
-(hl-line-mode)
+  (set-face-attribute 'default nil :height 120)
+  (display-battery-mode 1)
+  (display-time-mode 1)
+  (hl-line-mode)
+
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)
 
 (use-package dashboard
   :ensure t
@@ -93,25 +117,6 @@
   (setq-local comint-process-echoes t))
 (add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
 
-;; Pakcages
-
-(require 'package)
-(setq package-archives
-             '(("melpa" . "https://melpa.org/packages/")
-              ("org" . "https://orgmode.org/elpa/")
-              ("elpa" . "https://elpa.gnu.org/packages/")))
-
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
-
-  ;; Initialize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
 (use-package general
   :ensure t)
   :config
@@ -136,6 +141,12 @@
     "wv" '(evil-window-vsplit :which-key "Vsplit")
     "wq" '(delete-window :which-key "Quit")
     "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+
+    "p"  '(:ignore t :which-key "Projectile")
+    "pp" '(projectile-command-map :which-key "Command map")
+
+    "f"  '(:ignore t :which-key "Find")
+    "ff" '(projectile-find-file :which-key "Find File")
 
     "g" '(:ignore t :which-key "Git")
     "gs" '(magit-status :which-key "Magit")
@@ -204,6 +215,13 @@
 
 (use-package dap-mode :ensure t)
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t)
+   (shell . t)
+   (js . t)
+   ))
+
 (setq org-agenda-custom-commands
       '(("h" "Daily habits" 
          ((agenda ""))
@@ -226,8 +244,6 @@
 
 (require 'org-habit)
 (add-to-list 'org-modules 'org-habit)
-(setq org-habit-graph-column 60)
-
 
 (setq org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
@@ -282,12 +298,16 @@
   :hook (org-mode . efs/org-mode-visual-fill))
 
 (use-package org
-  :hook (org-mode . efs/org-mode-setup)
-  :config
-  (setq org-ellipsis " ▾")
-  (efs/org-font-setup)
-  (setq org-agenda-files
-	'("~/Orgs/")))
+    :hook (org-mode . efs/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
+    (efs/org-font-setup)
+    (setq org-agenda-files
+          '("~/Orgs/")))
+(defun nolinum ()
+  (global-display-line-numbers-mode 0)
+)
+(add-hook 'org-mode-hook 'nolinum)
 
 (use-package lsp-mode
   :init
@@ -368,7 +388,14 @@
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
   
-(custom-set-variables '(go-add-tags-style 'lower-camel-case))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(go-add-tags-style 'lower-camel-case)
+ '(package-selected-packages
+   '(pdf-tools dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
 
 (use-package smudge
   :ensure t)
@@ -427,9 +454,22 @@
    )))
 
 (use-package neotree :ensure t)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 (setq centaur-tabs-set-icons t)
 
 (setq centaur-tabs-set-bar 'under)
 ;; Note: If you're not using Spacmeacs, in order for the underline to display
 ;; correctly you must add the following line:
 (setq x-underline-at-descent-line t)
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy)))
+  ;; NOTE: Set this to the folder where you keep your Git repos!
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
