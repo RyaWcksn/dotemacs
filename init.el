@@ -395,7 +395,7 @@
  ;; If there is more than one, they won't work right.
  '(go-add-tags-style 'lower-camel-case)
  '(package-selected-packages
-   '(pdf-tools dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
+   '(org-roam projectile pdf-tools dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
 
 (use-package smudge
   :ensure t)

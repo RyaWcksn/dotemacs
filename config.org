@@ -438,6 +438,13 @@
 #+RESULTS:
 | nolinum | efs/org-mode-setup | efs/org-mode-visual-fill | org-bullets-mode | (lambda nil (add-hook 'after-save-hook #'efs/org-babel-tangle-config)) | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-tempo-setup | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
+** Org roam
+#+begin_src emacs-lisp
+(use-package org-roam)
+#+end_src
+
+#+RESULTS:
+
 * LSP
 ** LSP mode
 #+begin_src emacs-lisp
