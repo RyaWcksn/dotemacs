@@ -31,6 +31,7 @@
   (setq make-backup-file nil
         auto-save-default t)
   (setq split-width-threshold 0 )
+(setq split-height-threshold nil)
 
   ;; Y/N
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -118,52 +119,58 @@
 (add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
 
 (use-package general
-  :ensure t)
-  :config
-  (general-create-definer rune/leader-keys
-    :keymaps '(normal visual emacs)
-    :prefix "SPC"
-    :global-prefix "SPC")
+    :ensure t)
+    :config
+    (general-create-definer rune/leader-keys
+      :keymaps '(normal visual emacs)
+      :prefix "SPC"
+      :global-prefix "SPC")
 
-  (rune/leader-keys
-    "t"  '(:ignore t :which-key "Toggles")
-    "tt" '(counsel-load-theme :which-key "Choose theme")
-    ";" '(counsel-M-x :which-key "Meta")
-    "/" '(comment-region :which-key "Comment region")
+    (rune/leader-keys
+      "t"  '(:ignore t :which-key "Toggles")
+      "tt" '(counsel-load-theme :which-key "Choose theme")
+      ";" '(counsel-M-x :which-key "Meta")
+      "/" '(comment-region :which-key "Comment region")
 
-    "w"  '(:ignore t :which-key "Window")
-    "ws" '(evil-save :which-key "Save")
-    "wj" '(evil-window-down :which-key "Go Bottom")
-    "wk" '(evil-window-top :which-key "Go Top")
-    "wh" '(evil-window-left :which-key "Go Left")
-    "wl" '(evil-window-right :which-key "Go Right")
-    "wc" '(evil-window-split :which-key "Split")
-    "wv" '(evil-window-vsplit :which-key "Vsplit")
-    "wq" '(delete-window :which-key "Quit")
-    "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+      "w"  '(:ignore t :which-key "Window")
+      "ws" '(evil-save :which-key "Save")
+      "wj" '(evil-window-down :which-key "Go Bottom")
+      "wk" '(evil-window-top :which-key "Go Top")
+      "wh" '(evil-window-left :which-key "Go Left")
+      "wl" '(evil-window-right :which-key "Go Right")
+      "wc" '(evil-window-split :which-key "Split")
+      "wv" '(evil-window-vsplit :which-key "Vsplit")
+      "wq" '(delete-window :which-key "Quit")
+      "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
 
-    "p"  '(:ignore t :which-key "Projectile")
-    "pp" '(projectile-command-map :which-key "Command map")
+      "p"  '(:ignore t :which-key "Projectile")
+      "pp" '(projectile-command-map :which-key "Command map")
 
-    "f"  '(:ignore t :which-key "Find")
-    "ff" '(projectile-find-file :which-key "Find File")
+      "f"  '(:ignore t :which-key "Find")
+      "ff" '(projectile-find-file :which-key "Find File")
 
-    "g" '(:ignore t :which-key "Git")
-    "gs" '(magit-status :which-key "Magit")
+      "g" '(:ignore t :which-key "Git")
+      "gs" '(magit-status :which-key "Magit")
 
-    "o" '(:ignore t :which-key "Open")
+      "o" '(:ignore t :which-key "Open")
 
-    "oa" '(org-agenda :which-key "Org Agenda")
-    "oc" '(cfw:open-org-calendar :which-key "Calendar")
-    "oe" '(neotree :which-key "Neotree")
+      "oa" '(org-agenda :which-key "Org Agenda")
+      "oc" '(cfw:open-org-calendar :which-key "Calendar")
+      "oe" '(neotree :which-key "Neotree")
 
-    "C-c [" '(hs-hide-block :which-key "Fold")
-    "C-c ]" '(hs-show-block :which-key "Unfold")
+      "C-c [" '(hs-hide-block :which-key "Fold")
+      "C-c ]" '(hs-show-block :which-key "Unfold")
 
-    "<left>" '(centaur-tabs-backward :which-key "Previous tab")
-    "<right>" '(centaur-tabs-forward :which-key "Next tab")
+      "<left>" '(centaur-tabs-backward :which-key "Previous tab")
+      "<right>" '(centaur-tabs-forward :which-key "Next tab")
 
-    )
+      "b" '(:ignore :override t :which-key "Buffer")
+
+      "bb" '(counsel-switch-buffer :which-key "Switch buffer")
+      "bk" '(kill-buffer :which-key "Kill buffer")
+      )
+(general-auto-unbind-keys t)
+(define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
 
 (use-package evil
   :init
@@ -181,6 +188,12 @@
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
+(use-package evil-escape
+  :init
+  (evil-escape-mode)
+  :config
+  (setq-default evil-escape-key-sequence "jk")
+  )
 
 (use-package paredit :ensure t)
 
@@ -217,7 +230,28 @@
 
 (use-package flycheck :ensure t)
 
-(use-package dap-mode :ensure t)
+(use-package dap-mode
+       :ensure t
+;; Uncomment the config below if you want all UI panes to be hidden by default!
+ ;; :custom
+ ;; (lsp-enable-dap-auto-configure nil)
+ ;; :config
+ ;; (dap-ui-mode 1)
+ :commands dap-debug
+ :config
+ ;; Set up Node debugging
+ (require 'dap-node)
+ (dap-node-setup) ;; Automatically installs Node debug adapter if needed
+ (require 'dap-dlv-go)
+ (dap-go-setup)
+ (require 'dap-hydra)
+ (require 'dap-gdb-lldb)
+ (dap-gdb-lldb-setup)
+ (general-define-key
+  :keymaps 'lsp-mode-map
+  :prefix lsp-keymap-prefix
+  "d" '(dap-hydra t :wk "debugger"))
+       )
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -313,7 +347,35 @@
 )
 (add-hook 'org-mode-hook 'nolinum)
 
-(use-package org-roam)
+(use-package org-roam
+  :ensure t
+  :custom
+(org-roam-directory (file-truename "~/Orgs/Journal"))
+:bind (("C-c n l" . org-roam-buffer-toggle)
+       ("C-c n f" . org-roam-node-find)
+       ("C-c n g" . org-roam-graph)
+       ("C-c n i" . org-roam-node-insert)
+       ("C-c n c" . org-roam-capture)
+       ;; Dailies
+       ("C-c n j" . org-roam-dailies-capture-today))
+:config
+;; If you're using a vertical completion framework, you might want a more informative completion interface
+(setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+(org-roam-db-autosync-mode)
+;; If using org-roam-protocol
+(require 'org-roam-protocol))
+
+(use-package org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
 
 (use-package lsp-mode
   :init
@@ -466,3 +528,7 @@
   :config (projectile-mode)
   :custom ((projectile-completion-system 'ivy)))
   ;; NOTE: Set this to the folder where you keep your Git repos!
+
+(use-package wakatime-mode)
+(global-wakatime-mode)
+'(wakatime-api-key "waka_13d2f057-5212-4cc1-8cfa-172eca1f84c2")
