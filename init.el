@@ -19,41 +19,53 @@
 
 (setq user-full-name "Pramudya Arya Wicaksana")
 
-  (setq byte-compile-warnings '(cl-functions))
+(setq byte-compile-warnings '(cl-functions))
 
-  (setq gc-cons-threshold (* 50 1000 1000))
+(setq gc-cons-threshold (* 50 1000 1000))
 
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)
-  (tooltip-mode -1)
-  (global-hl-line-mode 1)
-  (setq make-backup-file nil
-        auto-save-default t)
-  (setq split-width-threshold 0 )
-(setq split-height-threshold nil)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(when (fboundp 'tool-tip-mode)
+  (tool-tip-mode -1))
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(global-hl-line-mode 1)
+(setq make-backup-file nil
+      auto-save-default t)
 
-  ;; Y/N
-  (defalias 'yes-or-no-p 'y-or-n-p)
 
-  ;; tabs off
-  (setq indent-tabs-mode nil)
+(setq split-width-threshold 1 )
 
-  (show-paren-mode t)
+;; Y/N
+(defalias 'yes-or-no-p 'y-or-n-p)
 
-  (require 'org-tempo)
+;; tabs off
+(setq indent-tabs-mode nil)
 
-  (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+(show-paren-mode t)
 
-  (setq make-backup-files nil)
+(require 'org-tempo)
 
-  (set-face-attribute 'default nil :height 120)
-  (display-battery-mode 1)
-  (display-time-mode 1)
-  (hl-line-mode)
+(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+
+(setq make-backup-files nil)
+
+(set-face-attribute 'default nil :height 120)
+(display-battery-mode 1)
+(display-time-mode 1)
+(hl-line-mode)
 
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)
+
+(let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+  (setenv "PATH" path)
+  (setq exec-path 
+        (append
+         (split-string-and-unquote path ":")
+         exec-path)))
 
 (use-package dashboard
   :ensure t
@@ -231,27 +243,36 @@
 (use-package flycheck :ensure t)
 
 (use-package dap-mode
-       :ensure t
-;; Uncomment the config below if you want all UI panes to be hidden by default!
- ;; :custom
- ;; (lsp-enable-dap-auto-configure nil)
- ;; :config
- ;; (dap-ui-mode 1)
- :commands dap-debug
- :config
- ;; Set up Node debugging
- (require 'dap-node)
- (dap-node-setup) ;; Automatically installs Node debug adapter if needed
- (require 'dap-dlv-go)
- (dap-go-setup)
- (require 'dap-hydra)
- (require 'dap-gdb-lldb)
- (dap-gdb-lldb-setup)
- (general-define-key
-  :keymaps 'lsp-mode-map
-  :prefix lsp-keymap-prefix
-  "d" '(dap-hydra t :wk "debugger"))
-       )
+         :ensure t
+  ;; Uncomment the config below if you want all UI panes to be hidden by default!
+   ;; :custom
+   ;; (lsp-enable-dap-auto-configure nil)
+   ;; :config
+   ;; (dap-ui-mode 1)
+   :commands dap-debug
+   :config
+(dap-tooltip-mode 1)
+;; use tooltips for mouse hover
+;; if it is not enabled `dap-mode' will use the minibuffer.
+(tooltip-mode 1)
+;; displays floating panel with debug buttons
+;; requies emacs 26+
+(dap-ui-controls-mode 1)
+   ;; Set up Node debugging
+   (require 'dap-node)
+   (dap-node-setup) ;; Automatically installs Node debug adapter if needed
+   (require 'dap-dlv-go)
+   (require 'dap-hydra)
+   (require 'dap-gdb-lldb)
+   (dap-gdb-lldb-setup)
+   (general-define-key
+    :keymaps 'lsp-mode-map
+    :prefix lsp-keymap-prefix
+    "d" '(dap-hydra t :wk "debugger"))
+         )
+  (rune/leader-keys
+    "d"  '(:ignore t :which-key "Debugging")
+    "dd" '(dap-hydra t :wk "debugger"))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -365,6 +386,15 @@
 ;; If using org-roam-protocol
 (require 'org-roam-protocol))
 
+(rune/leader-keys
+  "r"  '(:ignore t :which-key "Org Roam")
+  "rf" '(org-roam-node-find :which-key "Find node")
+  "rl" '(org-roam-buffer-toggle :which-key "Buffer toggle")
+  "rg" '(org-roam-ui-open :which-key "Graph")
+  "ri" '(org-roam-node-insert :which-key "Insert node")
+  "rc" '(org-roam-capture :which-key "Capture")
+  "rj" '(org-roam-capture-today :which-key "Capture today"))
+
 (use-package org-roam-ui
     :after org-roam ;; or :after org
 ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
@@ -457,6 +487,10 @@
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
   
 (custom-set-variables '(go-add-tags-style 'lower-camel-case))
+
+(use-package flycheck-golangci-lint
+  :hook (go-mode . flycheck-golangci-lint-setup)
+  :config (setq flycheck-golangci-lint-test t))
 
 (use-package smudge
   :ensure t)
