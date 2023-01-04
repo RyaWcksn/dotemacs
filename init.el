@@ -19,53 +19,52 @@
 
 (setq user-full-name "Pramudya Arya Wicaksana")
 
-(setq byte-compile-warnings '(cl-functions))
+  (setq byte-compile-warnings '(cl-functions))
 
-(setq gc-cons-threshold (* 50 1000 1000))
+  (setq gc-cons-threshold (* 50 1000 1000))
 
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-(when (fboundp 'tool-tip-mode)
-  (tool-tip-mode -1))
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
-(global-hl-line-mode 1)
-(setq make-backup-file nil
-      auto-save-default t)
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
+  (when (fboundp 'tool-tip-mode)
+    (tool-tip-mode -1))
+  (when (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1))
+  (global-hl-line-mode 1)
+  (setq make-backup-file nil
+        auto-save-default t)
 
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
+  ;; Y/N
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
-(setq split-width-threshold 1 )
+  ;; tabs off
+  (setq indent-tabs-mode nil)
 
-;; Y/N
-(defalias 'yes-or-no-p 'y-or-n-p)
+  (show-paren-mode t)
 
-;; tabs off
-(setq indent-tabs-mode nil)
+  (require 'org-tempo)
 
-(show-paren-mode t)
+  (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-(require 'org-tempo)
+  (setq make-backup-files nil)
 
-(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+  (set-face-attribute 'default nil :height 120)
+  (display-battery-mode 1)
+  (display-time-mode 1)
+  (hl-line-mode)
 
-(setq make-backup-files nil)
+  (global-display-line-numbers-mode 1)
+  (setq display-line-numbers-type 'relative)
 
-(set-face-attribute 'default nil :height 120)
-(display-battery-mode 1)
-(display-time-mode 1)
-(hl-line-mode)
-
-(global-display-line-numbers-mode 1)
-(setq display-line-numbers-type 'relative)
-
-(let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
-  (setenv "PATH" path)
-  (setq exec-path 
-        (append
-         (split-string-and-unquote path ":")
-         exec-path)))
+  (let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+    (setenv "PATH" path)
+    (setq exec-path 
+          (append
+           (split-string-and-unquote path ":")
+           exec-path)))
 
 (use-package dashboard
   :ensure t
@@ -161,8 +160,6 @@
       "f"  '(:ignore t :which-key "Find")
       "ff" '(projectile-find-file :which-key "Find File")
 
-      "g" '(:ignore t :which-key "Git")
-      "gs" '(magit-status :which-key "Magit")
 
       "o" '(:ignore t :which-key "Open")
 
@@ -240,6 +237,14 @@
   :custom
   (magit-displey-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+(defun open-magit-in-vertical-split ()
+  (interactive)
+  (magit-status))
+
+(rune/leader-keys
+    "g" '(:ignore t :which-key "Git")
+    "gs" '(open-magit-in-vertical-split :which-key "Magit"))
+
 (use-package flycheck :ensure t)
 
 (use-package dap-mode
@@ -297,7 +302,7 @@
 ;; Automatically tangle our Emacs.org config file when we save it
 (defun efs/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/Projects/Code/emacs-from-scratch/Emacs.org"))
+                      (expand-file-name "~/.emacs.d/config.org"))
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
@@ -374,20 +379,20 @@
 (use-package org-roam
   :ensure t
   :custom
-(org-roam-directory (file-truename "~/Orgs/Journal"))
-:bind (("C-c n l" . org-roam-buffer-toggle)
-       ("C-c n f" . org-roam-node-find)
-       ("C-c n g" . org-roam-graph)
-       ("C-c n i" . org-roam-node-insert)
-       ("C-c n c" . org-roam-capture)
-       ;; Dailies
-       ("C-c n j" . org-roam-dailies-capture-today))
-:config
-;; If you're using a vertical completion framework, you might want a more informative completion interface
-(setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-(org-roam-db-autosync-mode)
-;; If using org-roam-protocol
-(require 'org-roam-protocol))
+  (org-roam-directory (file-truename "~/Orgs/Journal"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
 
 (rune/leader-keys
   "r"  '(:ignore t :which-key "Org Roam")
@@ -396,7 +401,7 @@
   "rg" '(org-roam-ui-open :which-key "Graph")
   "ri" '(org-roam-node-insert :which-key "Insert node")
   "rc" '(org-roam-capture :which-key "Capture")
-  "rj" '(org-roam-capture-today :which-key "Capture today"))
+  "rj" '(org-roam-dailies-capture-today :which-key "Capture today"))
 
 (use-package org-roam-ui
     :after org-roam ;; or :after org
@@ -569,3 +574,12 @@
 (use-package wakatime-mode)
 (global-wakatime-mode)
 '(wakatime-api-key "waka_13d2f057-5212-4cc1-8cfa-172eca1f84c2")
+
+(defun open-terminal-in-vertical-split ()
+  (interactive)
+  (split-window-below)
+  (other-window 1)
+  (ansi-term "/usr/bin/zsh"))
+
+(rune/leader-keys
+  "ot" '(open-terminal-in-vertical-split :which-key "Open Terminal"))
