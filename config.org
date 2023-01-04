@@ -337,37 +337,40 @@
 * Dap
 ** Dap mode
 #+begin_src emacs-lisp
-         (use-package dap-mode
-           :ensure t
-    ;; Uncomment the config below if you want all UI panes to be hidden by default!
-     ;; :custom
-     ;; (lsp-enable-dap-auto-configure nil)
-     ;; :config
-     ;; (dap-ui-mode 1)
-     :commands dap-debug
-     :config
-  (dap-tooltip-mode 1)
-  ;; use tooltips for mouse hover
-  ;; if it is not enabled `dap-mode' will use the minibuffer.
-  (tooltip-mode 1)
-  ;; displays floating panel with debug buttons
-  ;; requies emacs 26+
-  (dap-ui-controls-mode 1)
-     ;; Set up Node debugging
-     (require 'dap-node)
-     (dap-node-setup) ;; Automatically installs Node debug adapter if needed
-     (require 'dap-dlv-go)
-     (require 'dap-hydra)
-     (require 'dap-gdb-lldb)
-     (dap-gdb-lldb-setup)
-     (general-define-key
-      :keymaps 'lsp-mode-map
-      :prefix lsp-keymap-prefix
-      "d" '(dap-hydra t :wk "debugger"))
-           )
-    (rune/leader-keys
-      "d"  '(:ignore t :which-key "Debugging")
-      "dd" '(dap-hydra t :wk "debugger"))
+	   (use-package dap-mode
+	     :ensure t
+      ;; Uncomment the config below if you want all UI panes to be hidden by default!
+       ;; :custom
+       ;; (lsp-enable-dap-auto-configure nil)
+       ;; :config
+       ;; (dap-ui-mode 1)
+       :commands dap-debug
+       :config
+    (dap-tooltip-mode 1)
+    ;; use tooltips for mouse hover
+    ;; if it is not enabled `dap-mode' will use the minibuffer.
+    (tooltip-mode 1)
+    ;; displays floating panel with debug buttons
+    ;; requies emacs 26+
+    (dap-ui-controls-mode 1)
+       ;; Set up Node debugging
+       (require 'dap-node)
+       (dap-node-setup) ;; Automatically installs Node debug adapter if needed
+       (require 'dap-dlv-go)
+       (require 'dap-hydra)
+       (require 'dap-gdb-lldb)
+       (dap-gdb-lldb-setup)
+       (general-define-key
+	:keymaps 'lsp-mode-map
+	:prefix lsp-keymap-prefix
+	"d" '(dap-hydra t :wk "debugger"))
+	     )
+
+      (rune/leader-keys
+	"d"  '(:ignore t :which-key "Debugging")
+	"ds" '(dap-debug t :wk "Start debug")
+	"db" '(dap-breakpoint-toggle t :wk "Toggle breakpoint")
+	"dd" '(dap-hydra t :wk "Debugger"))
 #+end_src
 
 #+RESULTS:

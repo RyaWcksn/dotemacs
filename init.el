@@ -243,7 +243,7 @@
 (use-package flycheck :ensure t)
 
 (use-package dap-mode
-         :ensure t
+	 :ensure t
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
    ;; :custom
    ;; (lsp-enable-dap-auto-configure nil)
@@ -269,10 +269,13 @@
     :keymaps 'lsp-mode-map
     :prefix lsp-keymap-prefix
     "d" '(dap-hydra t :wk "debugger"))
-         )
+	 )
+
   (rune/leader-keys
     "d"  '(:ignore t :which-key "Debugging")
-    "dd" '(dap-hydra t :wk "debugger"))
+    "ds" '(dap-debug t :wk "Start debug")
+    "db" '(dap-breakpoint-toggle t :wk "Toggle breakpoint")
+    "dd" '(dap-hydra t :wk "Debugger"))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
