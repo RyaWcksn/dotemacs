@@ -1,135 +1,80 @@
-(setq user-full-name "Pramudya Arya Wicaksana")
-
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-(global-hl-line-mode 1)
-(setq make-backup-file nil
-      auto-save-default t)
-
-;; Y/N
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-;; tabs off
-(setq indent-tabs-mode nil)
-
-(show-paren-mode t)
-
 ;; Pakcages
 
 (require 'package)
 (setq package-archives
-	     '(("melpa" . "https://melpa.org/packages/")
+             '(("melpa" . "https://melpa.org/packages/")
               ("org" . "https://orgmode.org/elpa/")
               ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
 
-(package-install 'use-package)
-(package-refresh-contents)
+  ;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
 
-(use-package general
-  :ensure t)
+(require 'use-package)
+(setq use-package-always-ensure t)
 
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+(setq user-full-name "Pramudya Arya Wicaksana")
 
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  (setq byte-compile-warnings '(cl-functions))
 
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  (setq gc-cons-threshold (* 50 1000 1000))
 
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
+  (when (fboundp 'tool-tip-mode)
+    (tool-tip-mode -1))
+  (when (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1))
+  (global-hl-line-mode 1)
+  (setq make-backup-file nil
+        auto-save-default t)
 
-(use-package counsel
-  :ensure t)
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
+  ;; Y/N
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
+  ;; tabs off
+  (setq indent-tabs-mode nil)
 
+  (show-paren-mode t)
 
+  (require 'org-tempo)
 
-;; Paredit
-(use-package paredit :ensure t)
+  (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-;; Smex
-(use-package smex
-  :ensure t
-  :config
-  (smex-initialize))
+  (setq make-backup-files nil)
 
-;; LSP Mode
-(use-package lsp-mode
-  :ensure t
-  :config
-  (setq lsp-headerline-breadcrumb-enable nil))
+  (set-face-attribute 'default nil :height 120)
+  (display-battery-mode 1)
+  (display-time-mode 1)
+  (hl-line-mode)
 
+  (global-display-line-numbers-mode 1)
+  (setq display-line-numbers-type 'relative)
 
-;; LSP UI
-;; Company
-;; DAP
-;; Flycheck
-(use-package flycheck :ensure t)
-(use-package lsp-ui :ensure t)
-(use-package dap-mode :ensure t)
-(use-package company
-  :ensure t
-  :config
-  (company-mode 1)
-  )
-  
-(use-package which-key
-  :ensure t
-  :diminish (which-key-mode)
-  :config
-  (setq which-key-idle-delay 0.3)
-  (which-key-mode 1))
-(use-package yasnippet :ensure t)
-(use-package dash :ensure t)
-(use-package ivy
-  :ensure t
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)	
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
+  (let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+    (setenv "PATH" path)
+    (setq exec-path 
+          (append
+           (split-string-and-unquote path ":")
+           exec-path)))
 
-(use-package hydra :ensure t)
-(use-package json-mode :ensure t)
-(use-package key-chord :ensure t)
-
-;; Dashboard
 (use-package dashboard
   :ensure t
   :config
   (dashboard-setup-startup-hook))
 
 ;; Set the title
-(setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+(setq dashboard-banner-logo-title "Personal Development Environment")
 ;; Set the banner
-(setq dashboard-startup-banner "~/.emacs.d/mayu.png" )
+(setq dashboard-startup-banner "~/.emacs.d/hikaru.png" )
 ;; Value can be
 ;; - nil to display no banner
 ;; - 'official which displays the official emacs logo
@@ -144,74 +89,497 @@
 ;; To disable shortcut "jump" indicators for each section, set
 (setq dashboard-show-shortcuts nil)
 
-(load-theme 'tango-dark)
-
-;; Keybind
-
-(use-package magit
-  :bind ("C-x g" . magit-status)
-  :ensure t
-  :config
-  (add-hook 'after-save-hook 'magit-after-save-refresh-status))
-
-(unless (package-installed-p 'evil)
-  (package-install 'evil))
-
-
-(setq gc-cons-threshold (* 100 1024 1024)
-      read-process-output-max (* 1024 1024)
-      company-idle-delay 0.0
-      comany-minimum-prefix-length 1
-      create-lockfiles nil)
-
-(with-eval-after-load 'lsp-mode
-  (require 'dap-chrome)
-  (setq lsp-modeline-diagnostics-enable t)
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-  (yas-global-mode))
-
-(use-package ido-vertical-mode
-  :ensure t
-  :init
-  (require 'ido)
-  (ido-mode t)
-  (setq ido-enable-prefix nil
-        ido-enable-flex-matching t
-        ido-case-fold nil
-        ido-auto-merge-work-directories-length -1
-        ido-create-new-buffer 'always
-        ido-use-filename-at-point nil
-        ido-max-prospects 10)
-  (require 'ido-vertical-mode)
-  (ido-vertical-mode)
-
-  (require 'dash)
-  (defun my/ido-go-straight-home ()
-    (interactive)
-    (cond
-     ((looking-back "~/") (insert "Developer/"))
-     ((looking-back "~/") (insert "Developer/"))
-     (:else (call-interactively 'self-insert-command))))
-  (defun my/setup-ido ()
-    (define-key ido-file-completion-map (kbd "~") 'my/ido-go-straight-home)
-    (define-key ido-file-completion-map (kbd "C-~") 'my/ido-go-straight-home))
-
-  (add-hook 'ido-setup-hook 'my/setup-ido)
-  (add-to-list 'ido-ignore-directories "node_modules"))
-
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
-(column-number-mode)
-(global-display-line-numbers-mode t)
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :bind
+  ("C-c <left>" . centaur-tabs-backward)
+  ("C-c <right>" . centaur-tabs-forward))
 
 (use-package ivy-rich
   :ensure t
   :init
  (ivy-rich-mode 1))
 
-(package-install all-the-icons
-                 :ensure t)
-> 
+(use-package counsel
+  :ensure t)
+
+(general-define-key
+ "M-x" 'counsel-M-x)
+
+(use-package all-the-icons
+  :ensure t)
+
+(use-package doom-themes 
+:ensure t
+:init (load-theme 'doom-horizon t)
+)
+
+(setq explicit-shell-file-name "/usr/bin/zsh")
+(setq shell-file-name "zsh")
+(setq explicit-zsh-args '("--login" "--interactive"))
+(defun zsh-shell-mode-setup ()
+  (setq-local comint-process-echoes t))
+(add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
+
+(use-package general
+    :ensure t)
+    :config
+    (general-create-definer rune/leader-keys
+      :keymaps '(normal visual emacs)
+      :prefix "SPC"
+      :global-prefix "SPC")
+
+    (rune/leader-keys
+      "t"  '(:ignore t :which-key "Toggles")
+      "tt" '(counsel-load-theme :which-key "Choose theme")
+      ";" '(counsel-M-x :which-key "Meta")
+      "/" '(comment-region :which-key "Comment region")
+
+      "w"  '(:ignore t :which-key "Window")
+      "ws" '(evil-save :which-key "Save")
+      "wj" '(evil-window-down :which-key "Go Bottom")
+      "wk" '(evil-window-top :which-key "Go Top")
+      "wh" '(evil-window-left :which-key "Go Left")
+      "wl" '(evil-window-right :which-key "Go Right")
+      "wc" '(evil-window-split :which-key "Split")
+      "wv" '(evil-window-vsplit :which-key "Vsplit")
+      "wq" '(delete-window :which-key "Quit")
+      "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+
+      "p"  '(:ignore t :which-key "Projectile")
+      "pp" '(projectile-command-map :which-key "Command map")
+
+      "f"  '(:ignore t :which-key "Find")
+      "ff" '(projectile-find-file :which-key "Find File")
+
+
+      "o" '(:ignore t :which-key "Open")
+
+      "oa" '(org-agenda :which-key "Org Agenda")
+      "oc" '(cfw:open-org-calendar :which-key "Calendar")
+      "oe" '(neotree :which-key "Neotree")
+
+      "C-c [" '(hs-hide-block :which-key "Fold")
+      "C-c ]" '(hs-show-block :which-key "Unfold")
+
+      "<left>" '(centaur-tabs-backward :which-key "Previous tab")
+      "<right>" '(centaur-tabs-forward :which-key "Next tab")
+
+      "b" '(:ignore :override t :which-key "Buffer")
+
+      "bb" '(counsel-switch-buffer :which-key "Switch buffer")
+      "bk" '(kill-buffer :which-key "Kill buffer")
+      )
+(general-auto-unbind-keys t)
+(define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
+
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+(use-package evil-escape
+  :init
+  (evil-escape-mode)
+  :config
+  (setq-default evil-escape-key-sequence "jk")
+  )
+
+(use-package paredit :ensure t)
+
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
+
+(use-package which-key
+  :ensure t
+  :diminish (which-key-mode)
+  :config
+  (setq which-key-idle-delay 0.3)
+  (which-key-mode 1))
+
+(use-package hydra
+  :ensure t)
+
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(rune/leader-keys
+  "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status)
+  :custom
+  (magit-displey-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(defun open-magit-in-vertical-split ()
+  (interactive)
+  (magit-status))
+
+(rune/leader-keys
+    "g" '(:ignore t :which-key "Git")
+    "gs" '(open-magit-in-vertical-split :which-key "Magit"))
+
+(use-package flycheck :ensure t)
+
+(use-package dap-mode
+	 :ensure t
+  ;; Uncomment the config below if you want all UI panes to be hidden by default!
+   ;; :custom
+   ;; (lsp-enable-dap-auto-configure nil)
+   ;; :config
+   ;; (dap-ui-mode 1)
+   :commands dap-debug
+   :config
+(dap-tooltip-mode 1)
+;; use tooltips for mouse hover
+;; if it is not enabled `dap-mode' will use the minibuffer.
+(tooltip-mode 1)
+;; displays floating panel with debug buttons
+;; requies emacs 26+
+(dap-ui-controls-mode 1)
+   ;; Set up Node debugging
+   (require 'dap-node)
+   (dap-node-setup) ;; Automatically installs Node debug adapter if needed
+   (require 'dap-dlv-go)
+   (require 'dap-hydra)
+   (require 'dap-gdb-lldb)
+   (dap-gdb-lldb-setup)
+   (general-define-key
+    :keymaps 'lsp-mode-map
+    :prefix lsp-keymap-prefix
+    "d" '(dap-hydra t :wk "debugger"))
+	 )
+
+  (rune/leader-keys
+    "d"  '(:ignore t :which-key "Debugging")
+    "ds" '(dap-debug t :wk "Start debug")
+    "db" '(dap-breakpoint-toggle t :wk "Toggle breakpoint")
+    "dd" '(dap-hydra t :wk "Debugger"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t)
+   (shell . t)
+   (js . t)
+   ))
+
+(setq org-agenda-custom-commands
+      '(("h" "Daily habits" 
+         ((agenda ""))
+         ((org-agenda-show-log t)
+          (org-agenda-ndays 7)
+          (org-agenda-log-mode-items '(state))
+          (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp ":DAILY:"))))
+        ;; other commands here
+        ))
+
+;; Automatically tangle our Emacs.org config file when we save it
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/.emacs.d/config.org"))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+(require 'org-habit)
+(add-to-list 'org-modules 'org-habit)
+
+(setq org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+(defun efs/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+;; Org Mode Configuration ------------------------------------------------------
+
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.4)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height 180 ))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(defun efs/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . efs/org-mode-visual-fill))
+
+(use-package org
+    :hook (org-mode . efs/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
+    (efs/org-font-setup)
+    (setq org-agenda-files
+          '("~/Orgs/")))
+(defun nolinum ()
+  (global-display-line-numbers-mode 0)
+)
+(add-hook 'org-mode-hook 'nolinum)
+
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Orgs/Journal"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
+(rune/leader-keys
+  "r"  '(:ignore t :which-key "Org Roam")
+  "rf" '(org-roam-node-find :which-key "Find node")
+  "rl" '(org-roam-buffer-toggle :which-key "Buffer toggle")
+  "rg" '(org-roam-ui-open :which-key "Graph")
+  "ri" '(org-roam-node-insert :which-key "Insert node")
+  "rc" '(org-roam-capture :which-key "Capture")
+  "rj" '(org-roam-dailies-capture-today :which-key "Capture today"))
+
+(use-package org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+  (defun ime-go-before-save ()
+    (interactive)
+    (when lsp-mode
+      (lsp-organize-imports)
+      (lsp-format-buffer)))
+
+  (setq lsp-completion-provider :none)
+
+(rune/leader-keys
+  "l"  '(:ignore t :which-key "LSP")
+  "lg" '(lsp-goto-type-definition :which-key "Go to definition")
+  "li" '(lsp-goto-implementation :which-key "Go to implementation")
+  "lc" '(lsp-execute-code-action :which-key "Code action")
+  "ll" '(lsp-avy-lens :which-key "Code lens")
+  "lr" '(lsp-rename :which-key "Code lens")
+  "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
+  "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
+
+(setq package-selected-packages 
+    '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+      ;; Optional packages
+      lsp-ui company hover))
+
+  (use-package dart-mode)
+
+;; export ANDROID_HOME=$HOME/Android
+;; export PATH=$ANDROID_HOME/cmdline-tools/tools/bin/:$PATH
+;; export PATH=$ANDROID_HOME/platform-tools/:$PATH
+
+;; export PATH="$PATH:$HOME/Android/flutter/bin/"
+
+
+  (setq lsp-dart-sdk-dir "~/Android/flutter/bin/cache/dart-sdk/")
+
+
+  (add-hook 'dart-mode-hook 'lsp)
+
+  (setq gc-cons-threshold (* 100 1024 1024)
+        read-process-output-max (* 1024 1024))
+
+(use-package go-mode
+  :ensure t
+  :bind (
+         ;; If you want to switch existing go-mode bindings to use lsp-mode/gopls instead
+         ;; uncomment the following lines
+         ;; ("C-c C-j" . lsp-find-definition)
+         ;; ("C-c C-d" . lsp-describe-thing-at-point)
+         )
+  :hook ((go-mode . lsp-deferred)
+         (before-save . lsp-format-buffer)
+         (before-save . lsp-organize-imports))
+  :config
+  (setq gofmt-command "goimports"))
+
+(provide 'gopls-config)
+
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook #'yas-minor-mode)
+
+(use-package go-fill-struct :ensure t)
+(use-package go-add-tags :ensure t)
+(use-package go-gen-test :ensure t)
+
+;; Golang related setup
+(rune/leader-keys
+  "c"  '(:ignore t :which-key "Code")
+  "cg"  '(:ignore t :which-key "Golang")
+  "cgg" '(go-add-tags :which-key "Go add tags")
+  "cgf" '(go-fill-struct :which-key "Go fill struct")
+  "cgt" '(go-gen-test-all :which-key "Go gen tests"))
+  
+(custom-set-variables '(go-add-tags-style 'lower-camel-case))
+
+(use-package flycheck-golangci-lint
+  :hook (go-mode . flycheck-golangci-lint-setup)
+  :config (setq flycheck-golangci-lint-test t))
+
+(use-package smudge
+  :ensure t)
+(setq smudge-oauth2-client-secret "463ea6db52404a62a9fd97b9428da25a")
+(setq smudge-oauth2-client-id "d96cacf178594a9bab92506eea93b7bf")
+(define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
+(setq smudge-transport 'connect)
+
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+       ("<tab>" . company-complete-selection))
+      (:map lsp-mode-map
+       ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(setq company-backends '((company-capf company-yasnippet)))
+
+(use-package yasnippet :ensure t
+  :config
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/")
+  (yas-global-mode 1)
+  )
+
+(use-package elcord :ensure t)
+
+(use-package emms :ensure t)
+(require 'emms-setup)
+(emms-all)
+(setq emms-player-list '(emms-player-mpv))
+(setq emms-source-file-default-directory "~/Music/")
+
+(use-package calfw :ensure t)
+(use-package calfw-org :ensure t)
+(use-package calfw-ical :ensure t)
+(use-package calfw-cal :ensure t)
+(require 'calfw)
+(require 'calfw-org)
+(require 'calfw-cal)
+(require 'calfw-ical)
+
+
+(defun my-open-calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:org-create-source "Green")  ; orgmode source
+    (cfw:howm-create-source "Blue")  ; howm source
+    (cfw:cal-create-source "Orange") ; diary source
+    (cfw:ical-create-source "Moon" "~/moon.ics" "Gray")  ; ICS source1
+    (cfw:ical-create-source "gcal" "https://calendar.google.com/calendar/ical/pramudyaarya%40ayoconnect.id/public/basic.ics" "IndianRed") ; google calendar ICS
+   )))
+
+(use-package neotree :ensure t)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+(setq centaur-tabs-set-icons t)
+
+(setq centaur-tabs-set-bar 'under)
+;; Note: If you're not using Spacmeacs, in order for the underline to display
+;; correctly you must add the following line:
+(setq x-underline-at-descent-line t)
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy)))
+  ;; NOTE: Set this to the folder where you keep your Git repos!
+
+(use-package wakatime-mode)
+(global-wakatime-mode)
+'(wakatime-api-key "waka_13d2f057-5212-4cc1-8cfa-172eca1f84c2")
+
+(defun open-terminal-in-vertical-split ()
+  (interactive)
+  (split-window-below)
+  (other-window 1)
+  (ansi-term "/usr/bin/zsh"))
+
+(rune/leader-keys
+  "ot" '(open-terminal-in-vertical-split :which-key "Open Terminal"))

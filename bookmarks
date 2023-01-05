@@ -1,0 +1,30 @@
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("Sandbox"
+ (filename . "~/Sandbox/")
+ (front-context-string . "c\n  drwxrwxr-x  ")
+ (rear-context-string . "96 Nov  7 21:41 ")
+ (position . 255))
+("Org Agenda"
+ (filename . "~/Orgs/")
+ (front-context-string . "assets\n  -rw-rw-")
+ (rear-context-string . "96 Dec 24 18:22 ")
+ (position . 316))
+("org-capture-last-stored"
+ (filename . "~/Orgs/Journal/20230103123747-org_mode.org")
+ (front-context-string)
+ (rear-context-string . "title: ORG mode\n")
+ (position . 86))
+("Ayoconnect"
+ (filename . "~/Projects/ayopop/")
+ (front-context-string . "SDDC.zip\n  -rw-r")
+ (rear-context-string . "53 Oct 21 16:44 ")
+ (position . 303))
+("Config"
+ (filename . "~/.emacs.d/")
+ (front-context-string . "request\n  -rw-r-")
+ (rear-context-string . "96 Dec 22 10:57 ")
+ (position . 1091))
+)
