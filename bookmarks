@@ -1,4 +1,4 @@
-;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
@@ -13,10 +13,10 @@
  (rear-context-string . "96 Dec 24 18:22 ")
  (position . 316))
 ("org-capture-last-stored"
- (filename . "~/.notes")
- (front-context-string . "*  TODO Do somet")
- (rear-context-string . "2022-12-24 Sat>\n")
- (position . 102))
+ (filename . "~/Orgs/Journal/20230103123747-org_mode.org")
+ (front-context-string)
+ (rear-context-string . "title: ORG mode\n")
+ (position . 86))
 ("Ayoconnect"
  (filename . "~/Projects/ayopop/")
  (front-context-string . "SDDC.zip\n  -rw-r")
