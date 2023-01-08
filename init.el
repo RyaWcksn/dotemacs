@@ -71,23 +71,15 @@
   :config
   (dashboard-setup-startup-hook))
 
-;; Set the title
 (setq dashboard-banner-logo-title "Personal Development Environment")
-;; Set the banner
 (setq dashboard-startup-banner "~/.emacs.d/hikaru.png" )
-;; Value can be
-;; - nil to display no banner
-;; - 'official which displays the official emacs logo
-;; - 'logo which displays an alternative emacs logo
-;; - 1, 2 or 3 which displays one of the text banners
-;; - "path/to/your/image.gif", "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever gif/image/text you would prefer
-;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
-
-;; Content is not centered by default. To center, set
 (setq dashboard-center-content t)
-
-;; To disable shortcut "jump" indicators for each section, set
 (setq dashboard-show-shortcuts nil)
+(setq dashboard-items '((recents  . 5)
+                        (bookmarks . 5)
+                        (projects . 5)
+                        (agenda . 5)
+                        (registers . 5)))
 
 (use-package doom-modeline
   :ensure t
@@ -376,44 +368,20 @@
 )
 (add-hook 'org-mode-hook 'nolinum)
 
-(use-package org-roam
-  :ensure t
-  :custom
-  (org-roam-directory (file-truename "~/Orgs/Journal"))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
+(use-package org-journal
+:defer t
+ :init
+  ;; Change default prefix key; needs to be set before loading org-journal
+  (setq org-journal-prefix-key "C-c j ")
   :config
-  ;; If you're using a vertical completion framework, you might want a more informative completion interface
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
-
-(rune/leader-keys
-  "r"  '(:ignore t :which-key "Org Roam")
-  "rf" '(org-roam-node-find :which-key "Find node")
-  "rl" '(org-roam-buffer-toggle :which-key "Buffer toggle")
-  "rg" '(org-roam-ui-open :which-key "Graph")
-  "ri" '(org-roam-node-insert :which-key "Insert node")
-  "rc" '(org-roam-capture :which-key "Capture")
-  "rj" '(org-roam-dailies-capture-today :which-key "Capture today"))
-
-(use-package org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+  (setq org-journal-dir "~/Orgs/Journal/"
+  org-journal-date-format "%A, %d %B %Y")
+  )
+  
+  (rune/leader-keys
+  "j"  '(:ignore t :which-key "Journal")
+  "jj" '(org-journal-new-entry :which-key "Write journal")
+  )
 
 (use-package lsp-mode
   :init

@@ -12,11 +12,6 @@
  (front-context-string . "assets\n  -rw-rw-")
  (rear-context-string . "96 Dec 24 18:22 ")
  (position . 316))
-("org-capture-last-stored"
- (filename . "~/Orgs/Journal/20230103123747-org_mode.org")
- (front-context-string)
- (rear-context-string . "title: ORG mode\n")
- (position . 86))
 ("Ayoconnect"
  (filename . "~/Projects/ayopop/")
  (front-context-string . "SDDC.zip\n  -rw-r")
