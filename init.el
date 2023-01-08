@@ -404,13 +404,16 @@
       "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n* ** TODO 15 minutes meditation\n\n"
       :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Daily")
       :unnarrowed t)
+     ("b" "book" plain "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Books")
+      :unnarrowed t)
    ))
   (org-roam-dailies-capture-templates
    '(("d" "default" entry "* %<%I:%M %p>: %?"
      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
 
      ("m" "morning routine" plain
-      "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n** TODO 15 minutes meditation\n\n\n"
+      "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n** TODO 15 minutes meditation\n\n** Today Agenda\n\n\n"
       :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
 
      ("e" "evening reflection" plain
