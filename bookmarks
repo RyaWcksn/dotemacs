@@ -12,11 +12,6 @@
  (front-context-string . "assets\n  -rw-rw-")
  (rear-context-string . "96 Dec 24 18:22 ")
  (position . 316))
-("org-capture-last-stored"
- (filename . "~/.notes")
- (front-context-string . "*  TODO Do somet")
- (rear-context-string . "2022-12-24 Sat>\n")
- (position . 102))
 ("Ayoconnect"
  (filename . "~/Projects/ayopop/")
  (front-context-string . "SDDC.zip\n  -rw-r")
