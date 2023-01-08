@@ -1,0 +1,8 @@
+#+author: Pramudya Arya Wicaksana
+#+title: Emacs and development workflow setup
+
+* Per-system settings
+Per-system settings are depends on specific machine that i use, in this case =Ubuntu=, =Arch Linux=, =MacOS=
+Basically i need =Zsh= for shell, =Git= for git obviously, =Nvim= for light config edit, =Emacs= as my main development IDE, =LazyGit= as my Git client, =Alacritty= for my Terminal client, =GCP CLI= and =AWS CLI= for sdk cloud, and =Go=, =NodeJS=, =Python3= for my main language programming
+** Ubuntu
+Basic terminal setup for Ubuntu distro
