@@ -738,10 +738,16 @@
   (use-package company
     :after lsp-mode
     :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-         ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
+    :bind (
+           :map company-active-map
+           ("<tab>" . company-complete-common-or-cycle)
+           ("C-j" . company-select-next-or-abort)
+           ("C-k" . company-select-previous-or-abort)
+           ("C-l" . company-other-backend)
+           ("C-h" . nil)
+           )
+           (:map lsp-mode-map
+           ("<tab>" . company-indent-or-complete-common))
     :custom
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
@@ -859,3 +865,61 @@
 #+end_src
 
 #+RESULTS:
+
+* Treesitter
+#+begin_src emacs-lisp
+(use-package tree-sitter
+  :ensure t
+  :defer t
+  :hook (
+         (go-mode        . tree-sitter-hl-mode)
+         )
+
+)
+
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter-mode
+)
+#+end_src
+
+#+RESULTS:
+
+* Multiple cursor
+#+begin_src emacs-lisp
+(use-package multiple-cursors
+  :ensure t
+  :defer t
+  :bind (
+  ("C-c C-<right>" . 'mc/mark-next-like-this-word) ; choose same word next
+  ("C-c C-<left>" . 'mc/mark-previous-word-like-this) ; choose same word previous
+  ("M-n" . 'mc/mark-next-like-this) ; choose char from next line same position
+  ("M-m" . 'mc/mark-previous-like-this); choose char from previous line same position
+  ("C-c C-_" . 'mc/mark-all-like-this)
+  ("C-x M-m" . 'back-to-indentation)
+  )
+  :hook
+  (multiple-cursors-mode . (lambda()
+                             (unbind-key "<return>" mc/keymap)
+                             (key-chord-define mc/keymap "ew" 'mc/keyboard-quit)
+                             ))
+)
+
+#+end_src
+
+#+RESULTS:
+: back-to-indentation
+
+* Markdown
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :mode "\\.\\(md\\|mdown\\|markdown\\)\\'"
+  :custom
+  (markdown-header-scaling t)
+  :bind(:map markdown-mode-map
+             ("M-n" . mc/mark-next-like-this)
+             ("M-m" . mc/mark-previous-like-this))
+)
+#+end_src
