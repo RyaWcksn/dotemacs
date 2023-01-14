@@ -31,54 +31,55 @@
 * Basic UI
 ** Basic
 #+begin_src emacs-lisp
-    (setq user-full-name "Pramudya Arya Wicaksana")
+      (setq user-full-name "Pramudya Arya Wicaksana")
 
-    (setq byte-compile-warnings '(cl-functions))
+      (setq byte-compile-warnings '(cl-functions))
 
-    (setq gc-cons-threshold (* 50 1000 1000))
+      (setq gc-cons-threshold (* 50 1000 1000))
 
-    (when (fboundp 'tool-bar-mode)
-      (tool-bar-mode -1))
-    (when (fboundp 'scroll-bar-mode)
-      (scroll-bar-mode -1))
-    (when (fboundp 'tool-tip-mode)
-      (tool-tip-mode -1))
-    (when (fboundp 'menu-bar-mode)
-      (menu-bar-mode -1))
-    (global-hl-line-mode 1)
-    (setq make-backup-file nil
-          auto-save-default t)
+      (when (fboundp 'tool-bar-mode)
+        (tool-bar-mode -1))
+      (when (fboundp 'scroll-bar-mode)
+        (scroll-bar-mode -1))
+      (when (fboundp 'tool-tip-mode)
+        (tool-tip-mode -1))
+      (when (fboundp 'menu-bar-mode)
+        (menu-bar-mode -1))
+      (global-hl-line-mode 1)
+      (setq make-backup-file nil
+            auto-save-default t)
 
-  (setq split-height-threshold nil)
-  (setq split-width-threshold 0)
-    ;; Y/N
-    (defalias 'yes-or-no-p 'y-or-n-p)
+    (setq split-height-threshold nil)
+  (setq split-width-threshold 160)
 
-    ;; tabs off
-    (setq indent-tabs-mode nil)
+      ;; Y/N
+      (defalias 'yes-or-no-p 'y-or-n-p)
 
-    (show-paren-mode t)
+      ;; tabs off
+      (setq indent-tabs-mode nil)
 
-    (require 'org-tempo)
+      (show-paren-mode t)
 
-    (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+      (require 'org-tempo)
 
-    (setq make-backup-files nil)
+      (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-    (set-face-attribute 'default nil :height 120)
-    (display-battery-mode 1)
-    (display-time-mode 1)
-    (hl-line-mode)
+      (setq make-backup-files nil)
 
-    (global-display-line-numbers-mode 1)
-    (setq display-line-numbers-type 'relative)
+      (set-face-attribute 'default nil :height 120)
+      (display-battery-mode 1)
+      (display-time-mode 1)
+      (hl-line-mode)
 
-    (let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
-      (setenv "PATH" path)
-      (setq exec-path 
-            (append
-             (split-string-and-unquote path ":")
-             exec-path)))
+      (global-display-line-numbers-mode 1)
+      (setq display-line-numbers-type 'relative)
+
+      (let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+        (setenv "PATH" path)
+        (setq exec-path 
+              (append
+               (split-string-and-unquote path ":")
+               exec-path)))
 
 #+end_src
 
