@@ -104,9 +104,6 @@
 (use-package counsel
   :ensure t)
 
-(general-define-key
- "M-x" 'counsel-M-x)
-
 (use-package all-the-icons
   :ensure t)
 
@@ -424,13 +421,6 @@
      ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
       :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
    ))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
   :config
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
@@ -438,6 +428,16 @@
 
 
   )
+
+(rune/leader-keys
+  "r"  '(:ignore t :which-key "Roam")
+  "rj" '(org-roam-dailies-capture-today :which-key "Capture today")
+  "rd" '(org-roam-dailies-find-directory :which-key "Journal directory")
+  "ri" '(org-roam-node-insert :which-key "Node insert")
+  "rf" '(org-roam-node-find :which-key "Node find")
+  "rc" '(org-roam-capture :which-key "Capture")
+  "rl" '(org-roam-buffer-toggle :which-key "Buffer toggle")
+  "rg" '(org-roam-ui-open :which-key "Graph"))
 
 (use-package org-roam-ui
   :after org-roam
