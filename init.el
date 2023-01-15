@@ -543,31 +543,6 @@
 (define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
 (setq smudge-transport 'connect)
 
-(use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (
-         :map company-active-map
-         ("<tab>" . company-complete-common-or-cycle)
-         ("C-j" . company-select-next-or-abort)
-         ("C-k" . company-select-previous-or-abort)
-         ("C-l" . company-other-backend)
-         ("C-h" . nil)
-         )
-         (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
-
-(setq company-backends '((company-capf company-yasnippet)))
-
-(use-package yasnippet :ensure t
-  :config
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets/yasnippet-golang/")
-  (yas-global-mode 1)
-  )
-
 (use-package elcord :ensure t)
 
 (use-package emms :ensure t)
