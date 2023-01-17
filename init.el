@@ -136,7 +136,7 @@
       "w"  '(:ignore t :which-key "Window")
       "ws" '(evil-save :which-key "Save")
       "wj" '(evil-window-down :which-key "Go Bottom")
-      "wk" '(evil-window-top :which-key "Go Top")
+      "wk" '(evil-window-up :which-key "Go Top")
       "wh" '(evil-window-left :which-key "Go Left")
       "wl" '(evil-window-right :which-key "Go Right")
       "wc" '(evil-window-split :which-key "Split")
@@ -588,9 +588,9 @@
   :custom ((projectile-completion-system 'ivy)))
   ;; NOounsTE: Set this to the folder where you keep your Git repos!
 
-(use-package wakatime-mode)
-(global-wakatime-mode)
-'(wakatime-api-key "waka_13d2f057-5212-4cc1-8cfa-172eca1f84c2")
+;;  (use-package wakatime-mode)
+  ;; (global-wakatime-mode)
+  ;;'(wakatime-api-key "waka_13d2f057-5212-4cc1-8cfa-172eca1f84c2")
 
 (defun open-terminal-in-vertical-split ()
   (interactive)
