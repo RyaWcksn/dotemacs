@@ -596,7 +596,9 @@
   (interactive)
   (split-window-below)
   (other-window 1)
-  (ansi-term "/usr/bin/zsh"))
+  (let ((shell (if (eq system-type 'darwin) "/bin/zsh" "/usr/bin/zsh")))
+    (ansi-term shell))
+  )
 
 (rune/leader-keys
   "ot" '(open-terminal-in-vertical-split :which-key "Open Terminal"))
@@ -643,3 +645,11 @@
              ("M-n" . mc/mark-next-like-this)
              ("M-m" . mc/mark-previous-like-this))
 )
+
+(use-package helm
+  :config
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  )
+(rune/leader-keys
+  "h"  '(helm-command-prefix :which-key "Helm"))
