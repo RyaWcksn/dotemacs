@@ -19,53 +19,56 @@
 
 (setq user-full-name "Pramudya Arya Wicaksana")
 
-    (setq byte-compile-warnings '(cl-functions))
+(setq byte-compile-warnings '(cl-functions))
 
-    (setq gc-cons-threshold (* 50 1000 1000))
+  ;; To set the garbage collection threshold to high (100 MB) since LSP client-server communication generates a lot of output/garbage
+(setq gc-cons-threshold 100000000)
+;; To increase the amount of data Emacs reads from a process
+(setq read-process-output-max (* 1024 1024)) 
 
-    (when (fboundp 'tool-bar-mode)
-      (tool-bar-mode -1))
-    (when (fboundp 'scroll-bar-mode)
-      (scroll-bar-mode -1))
-    (when (fboundp 'tool-tip-mode)
-      (tool-tip-mode -1))
-    (when (fboundp 'menu-bar-mode)
-      (menu-bar-mode -1))
-    (global-hl-line-mode 1)
-    (setq make-backup-file nil
-          auto-save-default t)
+      (when (fboundp 'tool-bar-mode)
+        (tool-bar-mode -1))
+      (when (fboundp 'scroll-bar-mode)
+        (scroll-bar-mode -1))
+      (when (fboundp 'tool-tip-mode)
+        (tool-tip-mode -1))
+      (when (fboundp 'menu-bar-mode)
+        (menu-bar-mode -1))
+      (global-hl-line-mode 1)
+      (setq make-backup-file nil
+            auto-save-default t)
 
-  (setq split-height-threshold nil)
-(setq split-width-threshold 160)
+    (setq split-height-threshold nil)
+  (setq split-width-threshold 160)
 
-    ;; Y/N
-    (defalias 'yes-or-no-p 'y-or-n-p)
+      ;; Y/N
+      (defalias 'yes-or-no-p 'y-or-n-p)
 
-    ;; tabs off
-    (setq indent-tabs-mode nil)
+      ;; tabs off
+      (setq indent-tabs-mode nil)
 
-    (show-paren-mode t)
+      (show-paren-mode t)
 
-    (require 'org-tempo)
+      (require 'org-tempo)
 
-    (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+      (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-    (setq make-backup-files nil)
+      (setq make-backup-files nil)
 
-    (set-face-attribute 'default nil :height 120)
-    (display-battery-mode 1)
-    (display-time-mode 1)
-    (hl-line-mode)
+      (set-face-attribute 'default nil :height 120)
+      (display-battery-mode 1)
+      (display-time-mode 1)
+      (hl-line-mode)
 
-    (global-display-line-numbers-mode 1)
-    (setq display-line-numbers-type 'relative)
+      (global-display-line-numbers-mode 1)
+      (setq display-line-numbers-type 'relative)
 
-    (let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
-      (setenv "PATH" path)
-      (setq exec-path 
-            (append
-             (split-string-and-unquote path ":")
-             exec-path)))
+      (let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+        (setenv "PATH" path)
+        (setq exec-path 
+              (append
+               (split-string-and-unquote path ":")
+               exec-path)))
 
 (use-package dashboard
   :ensure t
@@ -346,14 +349,6 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(defun efs/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :hook (org-mode . efs/org-mode-visual-fill))
-
 (use-package org
     :hook (org-mode . efs/org-mode-setup)
     :config
@@ -458,14 +453,22 @@
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          ;; if you want which-key integration
          (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
+  :commands lsp
+  )
   (defun ime-go-before-save ()
     (interactive)
     (when lsp-mode
       (lsp-organize-imports)
       (lsp-format-buffer)))
 
-  (setq lsp-completion-provider :none)
+(setq lsp-completion-provider :none)
+(setq lsp-ui-doc-show-with-cursor t)
+
+ (use-package lsp-ui
+  :ensure t
+  :config
+  (setq lsp-ui-sideline-ignore-duplicate t)
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (rune/leader-keys
   "l"  '(:ignore t :which-key "LSP")
@@ -496,25 +499,31 @@
 
   (add-hook 'dart-mode-hook 'lsp)
 
-  (setq gc-cons-threshold (* 100 1024 1024)
-        read-process-output-max (* 1024 1024))
-
 (use-package go-mode
   :ensure t
-  :bind (
-         ;; If you want to switch existing go-mode bindings to use lsp-mode/gopls instead
-         ;; uncomment the following lines
-         ;; ("C-c C-j" . lsp-find-definition)
-         ;; ("C-c C-d" . lsp-describe-thing-at-point)
-         )
-  :hook ((go-mode . lsp-deferred)
-         (before-save . lsp-format-buffer)
-         (before-save . lsp-organize-imports))
+  :hook
+  (
+   (go-mode . lsp-deffered)
+   (go-mode . company-mode)
+   )
   :config
-  (setq gofmt-command "goimports"))
+  (setq gofmt-command "gofmt")
+  (require 'lsp-go)
+  (setq lsp-go-analyses
+        '((fieldalignment . t)
+          (nilness . t)
+          (httpresponse . t)
+          (unusedwrite . t)
+          (unusedparams . t)
+          ))
+  )
 
 (provide 'gopls-config)
 
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook #'yas-minor-mode)
 
@@ -534,7 +543,11 @@
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)
-  :config (setq flycheck-golangci-lint-test t))
+  :config
+  (setq flycheck-golangci-lint-test t)
+  (setq flycheck-golangci-lint-enable-all t)
+  (setq flycheck-golangci-lint-disable-linters '("unused" "staticcheck" "misspell"))
+  )
 
 (use-package smudge
   :ensure t)
