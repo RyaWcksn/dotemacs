@@ -504,7 +504,7 @@
   :ensure t
   :hook
   (
-   (go-mode . lsp-deffered)
+   (go-mode . lsp-deferred)
    (go-mode . company-mode)
    )
   :config
@@ -549,6 +549,21 @@
   (setq flycheck-golangci-lint-enable-all t)
   (setq flycheck-golangci-lint-disable-linters '("unused" "staticcheck" "misspell"))
   )
+
+(use-package rjsx-mode
+  :config
+  (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("pages\\/.*\\.js\\'" . rjsx-mode))
+  )
+(add-hook 'js-mode-hook #'lsp)
+
+(use-package react-snippets)
+
+(use-package typescript-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.tsx.*$" . typescript-mode)))
+(add-hook 'typescript-mode-hook #'lsp)
 
 (use-package smudge
   :ensure t)

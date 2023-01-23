@@ -89,7 +89,7 @@
 #+end_src
 
 #+RESULTS:
-| /Users/senja/Android/platform-tools/ | /Users/senja/Android/cmdline-tools/tools/bin/ | /usr/local/opt/openvpn/sbin | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin | /usr/local/opt/php@7.3/bin | /Users/senja/Android/platform-tools/ | /Users/senja/Android/cmdline-tools/tools/bin/ | /usr/local/opt/openvpn/sbin | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin | /usr/local/opt/php@7.3/bin | /usr/local/opt/openvpn/sbin | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin | /usr/local/opt/php@7.3/bin | /usr/local/bin | /opt/X11/bin | /Library/Apple/usr/bin | /usr/local/Cellar/go/1.19.3/libexec/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/Cellar/go/1.19.3/libexec//bin | /Users/senja/go/bin | /Users/senja/Android/flutter/bin/ | /usr/local/Cellar/go/1.19.3/libexec//bin | /Users/senja/go/bin | /Users/senja/Android/flutter/bin/ | /Users/senja/Android/platform-tools/ | /Users/senja/Android/cmdline-tools/tools/bin/ | /usr/local/opt/openvpn/sbin | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin | /usr/local/opt/php@7.3/bin | /usr/local/opt/openvpn/sbin | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin | /usr/local/opt/php@7.3/bin | /usr/local/bin | /opt/X11/bin | /Library/Apple/usr/bin | /usr/local/Cellar/go/1.19.3/libexec/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/Cellar/go/1.19.3/libexec//bin | /Users/senja/go/bin | /Users/senja/Android/flutter/bin/ | /usr/local/opt/openvpn/sbin | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin | /usr/local/opt/php@7.3/bin | /usr/local/bin | /opt/X11/bin | /Library/Apple/usr/bin | /usr/local/Cellar/go/1.19.3/libexec/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/Cellar/emacs-plus@28/28.2/libexec/emacs/28.2/x86_64-apple-darwin20.4.0 |
+| /Users/senja/.zshrc | source | 286 | no such file or directory | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc |
 
 ** Dashboard
 #+begin_src emacs-lisp
@@ -679,13 +679,13 @@
 #+RESULTS:
 : 1048576
 
-*** GOLANG
+*** Golang
 #+begin_src emacs-lisp
   (use-package go-mode
     :ensure t
     :hook
     (
-     (go-mode . lsp-deffered)
+     (go-mode . lsp-deferred)
      (go-mode . company-mode)
      )
     :config
@@ -711,7 +711,7 @@
 #+end_src
 
 #+RESULTS:
-| lsp-deffered | company-mode | tree-sitter-hl-mode | flycheck-golangci-lint-setup | lsp-go-install-save-hooks | yas-minor-mode | lsp-deferred | doom-modeline-env-setup-go |
+| tree-sitter-hl-mode | flycheck-golangci-lint-setup | yas-minor-mode | lsp-deferred | lsp-go-install-save-hooks | company-mode | lsp-deffered | doom-modeline-env-setup-go |
 
 #+begin_src emacs-lisp
 (use-package go-fill-struct :ensure t)
@@ -747,6 +747,39 @@
 | tree-sitter-hl-mode | flycheck-golangci-lint-setup | lsp-go-install-save-hooks | yas-minor-mode | lsp-deferred | doom-modeline-env-setup-go |
 
 #+RESULTS:
+
+*** Javascript
+**** Rjsx
+#+begin_src emacs-lisp
+  (use-package rjsx-mode
+    :config
+    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+    (add-to-list 'auto-mode-alist '("pages\\/.*\\.js\\'" . rjsx-mode))
+    )
+  (add-hook 'js-mode-hook #'lsp)
+#+end_src
+
+#+RESULTS:
+| lsp |
+
+**** React snippet
+#+begin_src emacs-lisp
+  (use-package react-snippets)
+#+end_src
+
+#+RESULTS:
+
+*** Typescript
+#+begin_src emacs-lisp
+  (use-package typescript-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("\\.tsx.*$" . typescript-mode)))
+  (add-hook 'typescript-mode-hook #'lsp)
+#+end_src
+
+#+RESULTS:
+| lsp | evil-collection-typescript-mode-set-evil-shift-width |
 
 * Spotify
 ** Smudge
