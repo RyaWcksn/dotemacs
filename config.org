@@ -1,7 +1,7 @@
 #+author: Pramudya Arya Wicaksana
 #+TITLE: Emacs Config
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
-#+LATEX_CLASS: org-plain-latex
+#+LATEX_CLASS: article
 #+OPTIONS: toc:t
 
 * Package
@@ -89,7 +89,7 @@
 #+end_src
 
 #+RESULTS:
-| /Users/senja/.zshrc | source | 286 | no such file or directory | /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc |
+| /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/opt/openvpn/sbin | /usr/local/opt/php@7.3/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/opt/openvpn/sbin | /usr/local/opt/php@7.3/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/bin | /usr/local/go/bin | /opt/X11/bin | /Library/Apple/usr/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/go/bin | /Users/senja/go/bin | /usr/local/go/bin | /Users/senja/go/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/opt/openvpn/sbin | /usr/local/opt/php@7.3/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/bin | /usr/local/go/bin | /opt/X11/bin | /Library/Apple/usr/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/go/bin | /Users/senja/go/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/bin | /usr/local/go/bin | /opt/X11/bin | /Library/Apple/usr/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/Cellar/emacs-plus@28/28.2/libexec/emacs/28.2/x86_64-apple-darwin20.4.0 |
 
 ** Dashboard
 #+begin_src emacs-lisp
@@ -226,7 +226,8 @@
          "b" '(:ignore :override t :which-key "Buffer")
 
          "bb" '(counsel-switch-buffer :which-key "Switch buffer")
-         "bk" '(kill-buffer-and-window :which-key "Kill buffer")
+         "bk" '(kill-buffer :which-key "Kill buffer")
+         "qq" '(kill-buffer-and-window :which-key "Kill buffer")
          )
    (general-auto-unbind-keys t)
    (define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)

@@ -170,7 +170,8 @@
       "b" '(:ignore :override t :which-key "Buffer")
 
       "bb" '(counsel-switch-buffer :which-key "Switch buffer")
-      "bk" '(kill-buffer-and-window :which-key "Kill buffer")
+      "bk" '(kill-buffer :which-key "Kill buffer")
+      "qq" '(kill-buffer-and-window :which-key "Kill buffer")
       )
 (general-auto-unbind-keys t)
 (define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
