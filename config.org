@@ -1,8 +1,19 @@
 #+author: Pramudya Arya Wicaksana
 #+TITLE: Emacs Config
+#+SUBTITLE: My personal Emacs config, used for GO and Flutter development
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+LATEX_CLASS: article
-#+OPTIONS: toc:t
+#+EMAIL: pram.aryawcksn@protonmail.ch
+#+OPTIONS: toc:nil
+
+#+BEGIN_ABSTRACT
+As a starter kit for myself to dive into EMACS ecosystem
+i shall create my own config.
+
+Thus i need to do it myself
+#+END_ABSTRACT
+
+#+LaTeX: \tableofcontents
 
 * Package
 ** Melpa etc
@@ -533,17 +544,21 @@
         "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
         :unnarrowed t)
+
        ("c" "Campus" plain
         "* Overview\n\n- Subject: %?\n- Lecturer: \n\n** Reference:\n\n** Notes:\n\n"
         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
         :unnarrowed t)
+
        ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
         :unnarrowed t)
+
        ("m" "morning routine" plain
         "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n* ** TODO 15 minutes meditation\n\n"
         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Daily")
         :unnarrowed t)
+
        ("b" "book" plain "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Books")
         :unnarrowed t)
@@ -950,7 +965,6 @@
   :hook (
          (go-mode        . tree-sitter-hl-mode)
          )
-
 )
 
 (use-package tree-sitter-langs
@@ -1052,47 +1066,3 @@
 
 #+RESULTS:
 | org-plain-latex | \documentclass[12pt, a4paper, onecolumn, oneside, final, bahasa] |
-
-** Assignment template
-
-#+begin_src emacs-lisp
-    (with-eval-after-load 'ox-latex
-      (add-to-list 'org-latex-classes
-                   '("assignment"
-                         "\\documentclass[11pt,a4paper]{article}
-      \\usepackage[utf8]{inputenc}
-      \\usepackage[T1]{fontenc}
-      \\usepackage{fixltx2e}
-      \\usepackage{graphicx}
-      \\usepackage{longtable}
-      \\usepackage{float}
-      \\usepackage{wrapfig}
-      \\usepackage{rotating}
-      \\usepackage[normalem]{ulem}
-      \\usepackage{amsmath}
-      \\usepackage{textcomp}
-      \\usepackage{marvosym}
-      \\usepackage{wasysym}
-      \\usepackage{amssymb}
-      \\usepackage{hyperref}
-      \\usepackage{mathpazo}
-      \\usepackage{color}
-      \\usepackage{enumerate}
-      \\definecolor{bg}{rgb}{0.95,0.95,0.95}
-      \\tolerance=1000
-            [NO-DEFAULT-PACKAGES]
-            [PACKAGES]
-            [EXTRA]
-      \\linespread{1.1}
-      \\hypersetup{pdfborder=0 0 0}"
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-      ("\\paragraph{%s}" . "\\paragraph*{%s}")))
-
-      )
-#+end_src
-
-#+RESULTS:
-
-[[/home/aya/Downloads/wp10042601-mayu-watanabe-wallpapers.jpg][Mayu]]

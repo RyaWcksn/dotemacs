@@ -1,8 +1,13 @@
-;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Sandbox"
+(("org-capture-last-stored"
+ (filename . "~/Orgs/roam/daily/2023-01-30.org")
+ (front-context-string . "* Morning Routin")
+ (rear-context-string . "tle: 2023-01-30\n")
+ (position . 88))
+("Sandbox"
  (filename . "~/Sandbox/")
  (front-context-string . "c\n  drwxrwxr-x  ")
  (rear-context-string . "96 Nov  7 21:41 ")

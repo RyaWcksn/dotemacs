@@ -35,6 +35,7 @@ architecture ()
         i386)   architecture="386" ;;
         i686)   architecture="386" ;;
         x86_64) architecture="amd64" ;;
+        aarch64) architecture="arm64" ;;
         arm)    dpkg --print-architecture | grep -q "arm64" && architecture="arm64" || architecture="arm" ;;
         *) echo "Unknown architecture" break
     esac
@@ -77,18 +78,14 @@ download_source_code ()
         continue
     fi
     if [[ $(go version) != "go version go${version} ${os}/${architecture}" ]]; then
-        if [[ $os == "linux" ]]; then
-	    echo "Installing for Linux..."
-            sudo cp -r go /usr/bin/
-	    echo "Installation for Linux is done!"
-        elif [[ $os == "darwin" ]]; then
-	    echo "Installing for MacOs..."
+	    echo "Copy file..."
             sudo cp -r go /usr/local/
-	    echo "installation for MacOs is done!"
-        fi
-        continue
+	    echo "Copy done!"
     fi
-
+    echo "Creating GO basepath..."
+    echo "export GOPATH=$HOME/go" >> $HOME/.zshrc
+    echo "export GOBIN=$GOPATH/bin" >> $HOME/.zshrc
+    echo "export GOROOT=/usr/local/go" ?? $HOME/.zshrc
     echo "GO Version ${version} is installed"
 }
 
