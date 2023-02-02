@@ -392,6 +392,8 @@ Thus i need to do it myself
 #+RESULTS:
 
 * Org
+** Org Capture
+
 ** Babel
 #+begin_src emacs-lisp
     (org-babel-do-load-languages
