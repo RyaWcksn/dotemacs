@@ -353,16 +353,19 @@
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 (use-package org
-    :hook (org-mode . efs/org-mode-setup)
-    :config
-    (setq org-ellipsis " ▾")
-    (efs/org-font-setup)
-    (setq org-agenda-files
-          '("~/Orgs/")))
-(defun nolinum ()
-  (global-display-line-numbers-mode 0)
-)
+      :hook (org-mode . efs/org-mode-setup)
+      :config
+      (setq org-ellipsis " ...")
+      (efs/org-font-setup)
+      (setq org-agenda-files
+            '("~/Orgs/")))
+  (defun nolinum ()
+    (global-display-line-numbers-mode 0)
+  )
 (add-hook 'org-mode-hook 'nolinum)
+(setq org-src-fontify-natively t)
+(add-to-list 'org-latex-packages-alist '("" "listings" nil))
+(setq org-latex-listing t)
 
 (use-package org-journal
 :defer t
@@ -729,26 +732,33 @@
 
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
-               '("org-plain-latex"
-                 "\\documentclass[12pt, a4paper, onecolumn, oneside, final, bahasa]
-\\usepackage{graphics}
-\\usepackage{wrapfig}
-\\usepackage[indonesian]{babel}
-\\usepackage[T1]{fontenc}
-\\usepackage{tgpagella}
-\\usepackage{microtype}
-\\usepackage{booktabs}
-
-\\usepackage{upquote}
-\\usepackage[utf8]{inputenc}
-\\usepackage{eurosym}
-
-\\usepackage{amsmath}
-\\usepackage{amssymb}
-
-\\usepackage{graphicx}
-
-\\usepackage[unicode=true]{hyperref}"
+               '("assignment"
+                 "\\documentclass[a4paper,12pt]{article}
+\\renewcommand{\\chaptername}{Lab}
+\\makeatletter
+\\renewcommand{\\maketitle}{
+  \\begin{titlepage}
+    \\begin{center}
+      \\vspace*{2em}
+      \\Huge \\textbf{ASSIGNMENT} \\\\
+      \\vspace{4em}
+      \\Huge \\textbf{\\@title} \\\\
+      \\vspace{4em}
+      \\Large \\textbf{\\@date} \\\\
+      \\bigskip
+      \\Large \\textbf{\\@author} \\\\
+      \\medskip
+      \\large 191112436, CSE-3 \\\\
+      \\bigskip
+      \\includegraphics[width=16em]{../../manit-logo.png} \\\\
+      \\bigskip
+      \\large Department of Computer Science \\\\
+      \\large MANIT, Bhopal \\\\
+    \\end{center}
+  \\end{titlepage}
+}
+\\makeatother
+\\usepackage[margin=0.7in]{geometry}"
                  ("\\chapter{%s}" . "\\chapter*{%s}")
                  ("\\section{%s}" . "\\section*{%s}")
                  ("\\subsection{%s}" . "\\subsection*{%s}")
