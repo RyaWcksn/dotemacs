@@ -1,16 +1,13 @@
-;; Pakcages
-
 (require 'package)
 (setq package-archives
-             '(("melpa" . "https://melpa.org/packages/")
-              ("org" . "https://orgmode.org/elpa/")
-              ("elpa" . "https://elpa.gnu.org/packages/")))
+      '(("melpa" . "https://melpa.org/packages/")
+        ("org" . "https://orgmode.org/elpa/")
+        ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
 
-  ;; Initialize use-package on non-Linux platforms
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
@@ -26,49 +23,49 @@
 ;; To increase the amount of data Emacs reads from a process
 (setq read-process-output-max (* 1024 1024)) 
 
-      (when (fboundp 'tool-bar-mode)
-        (tool-bar-mode -1))
-      (when (fboundp 'scroll-bar-mode)
-        (scroll-bar-mode -1))
-      (when (fboundp 'tool-tip-mode)
-        (tool-tip-mode -1))
-      (when (fboundp 'menu-bar-mode)
-        (menu-bar-mode -1))
-      (global-hl-line-mode 1)
-      (setq make-backup-file nil
-            auto-save-default t)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(when (fboundp 'tool-tip-mode)
+  (tool-tip-mode -1))
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(global-hl-line-mode 1)
+(setq make-backup-file nil
+      auto-save-default t)
 
-    (setq split-height-threshold nil)
-  (setq split-width-threshold 160)
+(setq split-height-threshold nil)
+(setq split-width-threshold 160)
 
-      ;; Y/N
-      (defalias 'yes-or-no-p 'y-or-n-p)
+;; Y/N
+(defalias 'yes-or-no-p 'y-or-n-p)
 
-      ;; tabs off
-      (setq indent-tabs-mode nil)
+;; tabs off
+(setq indent-tabs-mode nil)
 
-      (show-paren-mode t)
+(show-paren-mode t)
 
-      (require 'org-tempo)
+(require 'org-tempo)
 
-      (add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
-      (setq make-backup-files nil)
+(setq make-backup-files nil)
 
-      (set-face-attribute 'default nil :height 120)
-      (display-battery-mode 1)
-      (display-time-mode 1)
-      (hl-line-mode)
+(set-face-attribute 'default nil :height 120)
+(display-battery-mode 1)
+(display-time-mode 1)
+(hl-line-mode)
 
-      (global-display-line-numbers-mode 1)
-      (setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)
 
-      (let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
-        (setenv "PATH" path)
-        (setq exec-path 
-              (append
-               (split-string-and-unquote path ":")
-               exec-path)))
+(let ((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+  (setenv "PATH" path)
+  (setq exec-path 
+        (append
+         (split-string-and-unquote path ":")
+         exec-path)))
 
 (use-package dashboard
   :ensure t
@@ -277,6 +274,7 @@
     "db" '(dap-breakpoint-toggle t :wk "Toggle breakpoint")
     "dd" '(dap-hydra t :wk "Debugger"))
 
+(setq org-babel-python-command "python3")
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)
@@ -363,9 +361,6 @@
     (global-display-line-numbers-mode 0)
   )
 (add-hook 'org-mode-hook 'nolinum)
-(setq org-src-fontify-natively t)
-(add-to-list 'org-latex-packages-alist '("" "listings" nil))
-(setq org-latex-listing t)
 
 (use-package org-journal
 :defer t
@@ -730,38 +725,80 @@
 (rune/leader-keys
   "h"  '(helm-command-prefix :which-key "Helm"))
 
-(with-eval-after-load 'ox-latex
-  (add-to-list 'org-latex-classes
-               '("assignment"
-                 "\\documentclass[a4paper,12pt]{article}
-\\renewcommand{\\chaptername}{Lab}
-\\makeatletter
-\\renewcommand{\\maketitle}{
-  \\begin{titlepage}
-    \\begin{center}
-      \\vspace*{2em}
-      \\Huge \\textbf{ASSIGNMENT} \\\\
-      \\vspace{4em}
-      \\Huge \\textbf{\\@title} \\\\
-      \\vspace{4em}
-      \\Large \\textbf{\\@date} \\\\
-      \\bigskip
-      \\Large \\textbf{\\@author} \\\\
-      \\medskip
-      \\large 191112436, CSE-3 \\\\
-      \\bigskip
-      \\includegraphics[width=16em]{../../manit-logo.png} \\\\
-      \\bigskip
-      \\large Department of Computer Science \\\\
-      \\large MANIT, Bhopal \\\\
-    \\end{center}
-  \\end{titlepage}
-}
-\\makeatother
-\\usepackage[margin=0.7in]{geometry}"
-                 ("\\chapter{%s}" . "\\chapter*{%s}")
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+(require 'ox-latex)
+(setq org-src-fontify-natively t)
+(add-to-list 'org-latex-packages-alist '("" "listings"))
+(setq org-latex-listing t)
+(add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
+
+
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+(add-to-list 'org-latex-classes
+             '("assignment"
+               "\\documentclass[a4paper,12pt]{report}
+  \\usepackage{listings}
+  \\renewcommand{\\chaptername}{Lab}
+  \\makeatletter
+  \\renewcommand{\\maketitle}{
+    \\begin{titlepage}
+      \\begin{center}
+        \\vspace*{2em}
+        \\Huge \\textbf{ASSIGNMENT} \\\\
+        \\vspace{4em}
+        \\Huge \\textbf{\\@title} \\\\
+        \\vspace{4em}
+        \\Large \\textbf{\\@date} \\\\
+        \\bigskip
+        \\Large \\textbf{\\@author} \\\\
+        \\medskip
+        \\large 2242805 \\\\
+        \\bigskip
+        \\includegraphics[width=16em]{../../manit-logo.png} \\\\
+        \\bigskip
+        \\large Teknik Informatika \\\\
+        \\large STMIK AMIK Bandung \\\\
+      \\end{center}
+    \\end{titlepage}
+  }
+  \\makeatother
+  \\usepackage[margin=0.7in]{geometry}"
+               ("\\chapter{%s}" . "\\chapter*{%s}")
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+
+(add-to-list 'org-latex-classes
+             '("research"
+               "\\documentclass[a4paper,12pt]{report}
+  \\usepackage{listings}
+  \\makeatletter
+  \\renewcommand{\\maketitle}{
+    \\begin{titlepage}
+      \\begin{center}
+        \\vspace*{2em}
+        \\Huge \\textbf{REPORT} \\\\
+        \\vspace{4em}
+        \\Huge \\textbf{\\@title} \\\\
+        \\vspace{4em}
+        \\Large \\textbf{\\@date} \\\\
+        \\bigskip
+        \\Large \\textbf{\\@author} \\\\
+        \\medskip
+      \\end{center}
+    \\end{titlepage}
+  }
+  \\makeatother
+  \\usepackage[margin=0.7in]{geometry}"
+               ("\\chapter{%s}" . "\\chapter*{%s}")
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
