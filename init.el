@@ -546,7 +546,8 @@
 (use-package go-fill-struct :ensure t)
 (use-package go-add-tags :ensure t)
 (use-package go-gen-test :ensure t)
-
+(use-package godoctor)
+(use-package gotest)
 ;; Golang related setup
 (rune/leader-keys
   "c"  '(:ignore t :which-key "Code")
@@ -554,8 +555,16 @@
   "cgg" '(go-add-tags :which-key "Go add tags")
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
-  
-(custom-set-variables '(go-add-tags-style 'lower-camel-case))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(go-add-tags-style 'lower-camel-case)
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(gotest godoctor dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)
@@ -802,3 +811,9 @@
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -6,6 +6,24 @@
 #+LATEX_CLASS: assignment
 #+startup: fold
 #+STARTUP: inlineimages
+#+LaTeX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancy}
+#+LaTeX_HEADER: \usepackage{amssymb,amsmath}
+#+LaTeX_HEADER: \usepackage{fancyhdr} %For headers and footers
+#+LaTeX_HEADER: \pagestyle{fancy} %For headers and footers
+#+LaTeX_HEADER: \usepackage{lastpage} %For getting page x of y
+#+LaTeX_HEADER: \usepackage{url} %Formatting of yrls
+#+LaTeX_HEADER: \lhead{ivanhanigan.github.com}
+#+LaTeX_HEADER: \chead{}
+#+LaTeX_HEADER: \rhead{\today}
+#+LaTeX_HEADER: \lfoot{Draft}
+#+LaTeX_HEADER: \cfoot{}
+#+LaTeX_HEADER: \rfoot{\thepage\ of \pageref{LastPage}}
+
+
+
+
+
 
 * UI
 
@@ -742,19 +760,23 @@ Doom modeline for showing bunch of stuffs
 | tree-sitter-hl-mode | flycheck-golangci-lint-setup | yas-minor-mode | lsp-deferred | lsp-go-install-save-hooks | company-mode | lsp-deffered | doom-modeline-env-setup-go |
 
 #+begin_src emacs-lisp
-(use-package go-fill-struct :ensure t)
-(use-package go-add-tags :ensure t)
-(use-package go-gen-test :ensure t)
+  (use-package go-fill-struct :ensure t)
+  (use-package go-add-tags :ensure t)
+  (use-package go-gen-test :ensure t)
+  (use-package godoctor)
+  (use-package gotest)
+  ;; Golang related setup
+  (rune/leader-keys
+    "c"  '(:ignore t :which-key "Code")
+    "cg"  '(:ignore t :which-key "Golang")
+    "cgg" '(go-add-tags :which-key "Go add tags")
+    "cgf" '(go-fill-struct :which-key "Go fill struct")
+    "cgt" '(go-gen-test-all :which-key "Go gen tests"))
 
-;; Golang related setup
-(rune/leader-keys
-  "c"  '(:ignore t :which-key "Code")
-  "cg"  '(:ignore t :which-key "Golang")
-  "cgg" '(go-add-tags :which-key "Go add tags")
-  "cgf" '(go-fill-struct :which-key "Go fill struct")
-  "cgt" '(go-gen-test-all :which-key "Go gen tests"))
-  
-(custom-set-variables '(go-add-tags-style 'lower-camel-case))
+  (custom-set-variables '(go-add-tags-style 'lower-camel-case))
+
+
+
 
 
 #+end_src
