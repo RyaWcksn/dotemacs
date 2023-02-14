@@ -405,6 +405,23 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 
+* Docker
+#+begin_src emacs-lisp
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+#+end_src
+
+#+RESULTS:
+: docker
+
+* Dockerfile
+#+begin_src emacs-lisp
+(use-package dockerfile-mode)
+#+end_src
+
+#+RESULTS:
+
 * Org
 ** Org Capture
 

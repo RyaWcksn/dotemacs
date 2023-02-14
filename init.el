@@ -274,6 +274,12 @@
     "db" '(dap-breakpoint-toggle t :wk "Toggle breakpoint")
     "dd" '(dap-hydra t :wk "Debugger"))
 
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+
+(use-package dockerfile-mode)
+
 (setq org-babel-python-command "python3")
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -556,15 +562,7 @@
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(go-add-tags-style 'lower-camel-case)
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(gotest godoctor dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
+(custom-set-variables '(go-add-tags-style 'lower-camel-case))
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)
@@ -811,9 +809,3 @@
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
