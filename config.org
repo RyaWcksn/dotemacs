@@ -477,8 +477,7 @@ Doom modeline for showing bunch of stuffs
 (add-to-list 'org-modules 'org-habit)
 
 (setq org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+    '((sequence "TODO(t)" "WAITING(n)" "|" "DONE(d)" "CANCEL(c)")))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -522,7 +521,7 @@ Doom modeline for showing bunch of stuffs
 #+end_src
 
 #+RESULTS:
-| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | nolinum | efs/org-mode-setup | efs/org-mode-visual-fill | org-bullets-mode | (lambda nil (add-hook 'after-save-hook #'efs/org-babel-tangle-config)) | org-tempo-setup | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
+| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | nolinum | efs/org-mode-setup | org-bullets-mode | (lambda nil (add-hook 'after-save-hook #'efs/org-babel-tangle-config)) | org-tempo-setup | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
 ** Org mode
 #+begin_src emacs-lisp
@@ -538,10 +537,24 @@ Doom modeline for showing bunch of stuffs
     )
   (add-hook 'org-mode-hook 'nolinum)
 
+  (global-set-key (kbd "C-c c") #'org-capture)
+
+
+  (setq org-capture-templates '(("t" "Todo [inbox]" entry
+                               (file+headline "~/Orgs/inbox.org" "Tasks")
+                               "* TODO %i%?")
+                              ("T" "Tickler" entry
+                               (file+headline "~/Orgs/tickler.org" "Tickler")
+                               "* %i%? \n %U")))
+
+  (setq org-refile-targets '(("~/Orgs/agenda.org" :maxlevel . 3)
+                           ("~/Orgs/someday.org" :level . 1)
+                           ("~/Orgs/tickler.org" :maxlevel . 2)))
+
 #+end_src
 
 #+RESULTS:
-: t
+: ((~/Orgs/agenda.org :maxlevel . 3) (~/Orgs/someday.org :level . 1) (~/Orgs/tickler.org :maxlevel . 2))
 
 ** Org journal
 #+begin_src emacs-lisp

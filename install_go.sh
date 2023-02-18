@@ -74,18 +74,17 @@ download_source_code ()
     cd "Golang/"
     if [[ $(ls | grep ${version}) == "" ]]; then
         wget https://go.dev/dl/go$version.$os-$architecture.tar.gz 
-        tar -xvf go$version.$os-$architecture.tar.gz 
-        continue
+        sudo tar -C /usr/local/ -xvf go$version.$os-$architecture.tar.gz 
     fi
     if [[ $(go version) != "go version go${version} ${os}/${architecture}" ]]; then
 	    echo "Copy file..."
-            sudo cp -r go /usr/local/
+            sudo tar -C /usr/local/ -xvf go$version.$os-$architecture.tar.gz 
 	    echo "Copy done!"
     fi
     echo "Creating GO basepath..."
     echo "export GOPATH=$HOME/go" >> $HOME/.zshrc
-    echo "export GOBIN=$GOPATH/bin" >> $HOME/.zshrc
-    echo "export GOROOT=/usr/local/go" ?? $HOME/.zshrc
+    echo "export GOROOT=/usr/local/go" >> $HOME/.zshrc
+    echo "export PATH=\$PATH:\$GOROOT/bin:\$GOPATH/bin" >> $HOME/.zshrc
     echo "GO Version ${version} is installed"
 }
 

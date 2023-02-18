@@ -313,8 +313,7 @@
 (add-to-list 'org-modules 'org-habit)
 
 (setq org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+    '((sequence "TODO(t)" "WAITING(n)" "|" "DONE(d)" "CANCEL(c)")))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -367,6 +366,20 @@
     (global-display-line-numbers-mode 0)
   )
 (add-hook 'org-mode-hook 'nolinum)
+
+(global-set-key (kbd "C-c c") #'org-capture)
+
+
+(setq org-capture-templates '(("t" "Todo [inbox]" entry
+                             (file+headline "~/Orgs/inbox.org" "Tasks")
+                             "* TODO %i%?")
+                            ("T" "Tickler" entry
+                             (file+headline "~/Orgs/tickler.org" "Tickler")
+                             "* %i%? \n %U")))
+
+(setq org-refile-targets '(("~/Orgs/agenda.org" :maxlevel . 3)
+                         ("~/Orgs/someday.org" :level . 1)
+                         ("~/Orgs/tickler.org" :maxlevel . 2)))
 
 (use-package org-journal
 :defer t
