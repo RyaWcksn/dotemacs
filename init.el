@@ -119,59 +119,65 @@
   (setq-local comint-process-echoes t))
 (add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
 
-(use-package general
-    :ensure t)
-    :config
-    (general-create-definer rune/leader-keys
-      :keymaps '(normal visual emacs)
-      :prefix "SPC"
-      :global-prefix "SPC")
+(defun kill-other-buffers ()
+      "Kill all other buffers."
+      (interactive)
+      (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
 
-    (rune/leader-keys
-      "t"  '(:ignore t :which-key "Toggles")
-      "tt" '(counsel-load-theme :which-key "Choose theme")
-      ";" '(counsel-M-x :which-key "Meta")
-      "/" '(comment-region :which-key "Comment region")
+    (use-package general
+      :ensure t)
+      :config
+      (general-create-definer rune/leader-keys
+        :keymaps '(normal visual emacs)
+        :prefix "SPC"
+        :global-prefix "SPC")
 
-      "w"  '(:ignore t :which-key "Window")
-      "ws" '(evil-save :which-key "Save")
-      "wj" '(evil-window-down :which-key "Go Bottom")
-      "wk" '(evil-window-up :which-key "Go Top")
-      "wh" '(evil-window-left :which-key "Go Left")
-      "wl" '(evil-window-right :which-key "Go Right")
-      "wc" '(evil-window-split :which-key "Split")
-      "wv" '(evil-window-vsplit :which-key "Vsplit")
-      "wq" '(delete-window :which-key "Quit")
-      "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+      (rune/leader-keys
+        "t"  '(:ignore t :which-key "Toggles")
+        "tt" '(counsel-load-theme :which-key "Choose theme")
+        ";" '(counsel-M-x :which-key "Meta")
+        "/" '(comment-region :which-key "Comment region")
 
-      "p"  '(:ignore t :which-key "Projectile")
-      "pp" '(projectile-command-map :which-key "Command map")
+        "w"  '(:ignore t :which-key "Window")
+        "ws" '(evil-save :which-key "Save")
+        "wj" '(evil-window-down :which-key "Go Bottom")
+        "wk" '(evil-window-up :which-key "Go Top")
+        "wh" '(evil-window-left :which-key "Go Left")
+        "wl" '(evil-window-right :which-key "Go Right")
+        "wc" '(evil-window-split :which-key "Split")
+        "wv" '(evil-window-vsplit :which-key "Vsplit")
+        "wq" '(delete-window :which-key "Quit")
+        "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
 
-      "f"  '(:ignore t :which-key "Find")
-      "ff" '(projectile-find-file :which-key "Find File")
+        "p"  '(:ignore t :which-key "Projectile")
+        "pp" '(projectile-command-map :which-key "Command map")
+
+        "f"  '(:ignore t :which-key "Find")
+        "ff" '(projectile-find-file :which-key "Find File")
 
 
-      "o" '(:ignore t :which-key "Open")
+        "o" '(:ignore t :which-key "Open")
 
-      "oa" '(org-agenda :which-key "Org Agenda")
-      "oc" '(cfw:open-org-calendar :which-key "Calendar")
-      "oe" '(neotree :which-key "Neotree")
-      "od" '(dired :which-key "Dired")
+        "oa" '(org-agenda :which-key "Org Agenda")
+        "oc" '(cfw:open-org-calendar :which-key "Calendar")
+        "oe" '(neotree :which-key "Neotree")
+        "od" '(dired :which-key "Dired")
 
-      "C-c [" '(hs-hide-block :which-key "Fold")
-      "C-c ]" '(hs-show-block :which-key "Unfold")
+        "C-c [" '(hs-hide-block :which-key "Fold")
+        "C-c ]" '(hs-show-block :which-key "Unfold")
 
-      "<left>" '(centaur-tabs-backward :which-key "Previous tab")
-      "<right>" '(centaur-tabs-forward :which-key "Next tab")
+        "<left>" '(centaur-tabs-backward :which-key "Previous tab")
+        "<right>" '(centaur-tabs-forward :which-key "Next tab")
 
-      "b" '(:ignore :override t :which-key "Buffer")
+        "b" '(:ignore :override t :which-key "Buffer")
 
-      "bb" '(counsel-switch-buffer :which-key "Switch buffer")
-      "bk" '(kill-buffer :which-key "Kill buffer")
-      "qq" '(kill-buffer-and-window :which-key "Kill buffer")
-      )
-(general-auto-unbind-keys t)
-(define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
+        "bb" '(counsel-switch-buffer :which-key "Switch buffer")
+        "bk" '(kill-buffer :which-key "Kill buffer")
+        "qq" '(kill-buffer-and-window :which-key "Kill buffer")
+        "ba" '(kill-other-buffers :which-key "Kill other buffer except this")
+        )
+  (general-auto-unbind-keys t)
+  (define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
 
 (use-package evil
   :init
@@ -357,16 +363,12 @@
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 (use-package org
-      :hook (org-mode . efs/org-mode-setup)
-      :config
-      (setq org-ellipsis " ...")
-      (efs/org-font-setup)
-      (setq org-agenda-files
-            '("~/Orgs/")))
-  (defun nolinum ()
-    (global-display-line-numbers-mode 0)
-  )
-(add-hook 'org-mode-hook 'nolinum)
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ...")
+  (efs/org-font-setup)
+  (setq org-agenda-files
+        '("~/Orgs/")))
 
 (use-package org-journal
 :defer t
