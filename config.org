@@ -218,12 +218,11 @@ Doom modeline for showing bunch of stuffs
          "/" '(comment-region :which-key "Comment region")
 
          "w"  '(:ignore t :which-key "Window")
-         "ws" '(evil-save :which-key "Save")
+         "ws" '(evil-window-split :which-key "Split")
          "wj" '(evil-window-down :which-key "Go Bottom")
          "wk" '(evil-window-up :which-key "Go Top")
          "wh" '(evil-window-left :which-key "Go Left")
          "wl" '(evil-window-right :which-key "Go Right")
-         "wc" '(evil-window-split :which-key "Split")
          "wv" '(evil-window-vsplit :which-key "Vsplit")
          "wq" '(delete-window :which-key "Quit")
          "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
@@ -234,6 +233,7 @@ Doom modeline for showing bunch of stuffs
          "f"  '(:ignore t :which-key "Find")
          "ff" '(projectile-find-file :which-key "Find File")
 
+         "s" '(evil-save :which-key "Save")
 
          "o" '(:ignore t :which-key "Open")
 
@@ -1165,3 +1165,29 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 | research | \documentclass[a4paper,12pt]{report} |
+
+* Prespective-el
+#+begin_src emacs-lisp
+  (use-package perspective
+    :bind
+    ("C-x k" . persp-kill-buffer*)         ; or use a nicer switcher, see below
+    :custom
+    (persp-mode-prefix-key (kbd "C-c M-p"))  ; pick your own prefix key here
+    :init
+    (persp-mode))
+
+
+       (rune/leader-keys
+         "p"  '(:ignore t :which-key "Perspective")
+         "ps" '(persp-switch :which-key "Switch perspective")
+         "pm" '(persp-merge :which-key "Merge perspective")
+         )
+
+       (rune/leader-keys
+         "[" '(persp-next :which-key "Next perspective")
+         "]" '(persp-prev :which-key "Prev perspective")
+         )
+
+#+end_src
+
+#+RESULTS:

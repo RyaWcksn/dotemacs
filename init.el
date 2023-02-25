@@ -134,12 +134,11 @@
       "/" '(comment-region :which-key "Comment region")
 
       "w"  '(:ignore t :which-key "Window")
-      "ws" '(evil-save :which-key "Save")
+      "ws" '(evil-window-split :which-key "Split")
       "wj" '(evil-window-down :which-key "Go Bottom")
       "wk" '(evil-window-up :which-key "Go Top")
       "wh" '(evil-window-left :which-key "Go Left")
       "wl" '(evil-window-right :which-key "Go Right")
-      "wc" '(evil-window-split :which-key "Split")
       "wv" '(evil-window-vsplit :which-key "Vsplit")
       "wq" '(delete-window :which-key "Quit")
       "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
@@ -150,6 +149,7 @@
       "f"  '(:ignore t :which-key "Find")
       "ff" '(projectile-find-file :which-key "Find File")
 
+      "s" '(evil-save :which-key "Save")
 
       "o" '(:ignore t :which-key "Open")
 
@@ -575,7 +575,15 @@
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
 
-(custom-set-variables '(go-add-tags-style 'lower-camel-case))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(go-add-tags-style 'lower-camel-case)
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(gotest dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)
@@ -822,3 +830,29 @@
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(use-package perspective
+  :bind
+  ("C-x k" . persp-kill-buffer*)         ; or use a nicer switcher, see below
+  :custom
+  (persp-mode-prefix-key (kbd "C-c M-p"))  ; pick your own prefix key here
+  :init
+  (persp-mode))
+
+
+     (rune/leader-keys
+       "p"  '(:ignore t :which-key "Perspective")
+       "ps" '(persp-switch :which-key "Switch perspective")
+       "pm" '(persp-merge :which-key "Merge perspective")
+       )
+
+     (rune/leader-keys
+       "[" '(persp-next :which-key "Next perspective")
+       "]" '(persp-prev :which-key "Prev perspective")
+       )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
