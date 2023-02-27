@@ -119,65 +119,57 @@
   (setq-local comint-process-echoes t))
 (add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
 
-(defun kill-other-buffers ()
-      "Kill all other buffers."
-      (interactive)
-      (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+(use-package general
+   :ensure t)
+   :config
+   (general-create-definer rune/leader-keys
+     :keymaps '(normal visual emacs)
+     :prefix "SPC"
+     :global-prefix "SPC")
 
-    (use-package general
-      :ensure t)
-      :config
-      (general-create-definer rune/leader-keys
-        :keymaps '(normal visual emacs)
-        :prefix "SPC"
-        :global-prefix "SPC")
+(rune/leader-keys
+     "t"  '(:ignore t :which-key "Toggles")
+     "tt" '(counsel-load-theme :which-key "Choose theme")
+     ";" '(counsel-M-x :which-key "Meta")
+     "/" '(comment-region :which-key "Comment region")
 
-      (rune/leader-keys
-        "t"  '(:ignore t :which-key "Toggles")
-        "tt" '(counsel-load-theme :which-key "Choose theme")
-        ";" '(counsel-M-x :which-key "Meta")
-        "/" '(comment-region :which-key "Comment region")
+     "w"  '(:ignore t :which-key "Window")
+     "ws" '(evil-window-split :which-key "Split")
+     "wj" '(evil-window-down :which-key "Go Bottom")
+     "wk" '(evil-window-up :which-key "Go Top")
+     "wh" '(evil-window-left :which-key "Go Left")
+     "wl" '(evil-window-right :which-key "Go Right")
+     "wv" '(evil-window-vsplit :which-key "Vsplit")
+     "wq" '(delete-window :which-key "Quit")
+     "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
 
-        "w"  '(:ignore t :which-key "Window")
-        "ws" '(evil-save :which-key "Save")
-        "wj" '(evil-window-down :which-key "Go Bottom")
-        "wk" '(evil-window-up :which-key "Go Top")
-        "wh" '(evil-window-left :which-key "Go Left")
-        "wl" '(evil-window-right :which-key "Go Right")
-        "wc" '(evil-window-split :which-key "Split")
-        "wv" '(evil-window-vsplit :which-key "Vsplit")
-        "wq" '(delete-window :which-key "Quit")
-        "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+     "p"  '(:ignore t :which-key "Projectile")
+     "pp" '(projectile-command-map :which-key "Command map")
 
-        "p"  '(:ignore t :which-key "Projectile")
-        "pp" '(projectile-command-map :which-key "Command map")
+     "f"  '(:ignore t :which-key "Find")
+     "ff" '(projectile-find-file :which-key "Find File")
 
-        "f"  '(:ignore t :which-key "Find")
-        "ff" '(projectile-find-file :which-key "Find File")
+     "s" '(evil-save :which-key "Save")
 
+     "o" '(:ignore t :which-key "Open")
 
-        "o" '(:ignore t :which-key "Open")
+     "oa" '(org-agenda :which-key "Org Agenda")
+     "oc" '(cfw:open-org-calendar :which-key "Calendar")
+     "oe" '(neotree :which-key "Neotree")
+     "od" '(dired :which-key "Dired")
 
-        "oa" '(org-agenda :which-key "Org Agenda")
-        "oc" '(cfw:open-org-calendar :which-key "Calendar")
-        "oe" '(neotree :which-key "Neotree")
-        "od" '(dired :which-key "Dired")
+      "<left>" '(centaur-tabs-backward :which-key "Previous tab")
+      "<right>" '(centaur-tabs-forward :which-key "Next tab")
 
-        "C-c [" '(hs-hide-block :which-key "Fold")
-        "C-c ]" '(hs-show-block :which-key "Unfold")
+      "b" '(:ignore :override t :which-key "Buffer")
 
-        "<left>" '(centaur-tabs-backward :which-key "Previous tab")
-        "<right>" '(centaur-tabs-forward :which-key "Next tab")
-
-        "b" '(:ignore :override t :which-key "Buffer")
-
-        "bb" '(counsel-switch-buffer :which-key "Switch buffer")
-        "bk" '(kill-buffer :which-key "Kill buffer")
-        "qq" '(kill-buffer-and-window :which-key "Kill buffer")
-        "ba" '(kill-other-buffers :which-key "Kill other buffer except this")
-        )
-  (general-auto-unbind-keys t)
-  (define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
+      "bb" '(counsel-switch-buffer :which-key "Switch buffer")
+      "bk" '(kill-buffer :which-key "Kill buffer")
+      "qq" '(kill-buffer-and-window :which-key "Kill buffer")
+      "ba" '(kill-other-buffers :which-key "Kill other buffer except this")
+      )
+(general-auto-unbind-keys t)
+(define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
 
 (use-package evil
   :init
@@ -319,8 +311,7 @@
 (add-to-list 'org-modules 'org-habit)
 
 (setq org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+    '((sequence "TODO(t)" "WAITING(n)" "|" "DONE(d)" "CANCEL(c)")))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -363,12 +354,30 @@
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 (use-package org
-  :hook (org-mode . efs/org-mode-setup)
-  :config
-  (setq org-ellipsis " ...")
-  (efs/org-font-setup)
-  (setq org-agenda-files
-        '("~/Orgs/")))
+      :hook (org-mode . efs/org-mode-setup)
+      :config
+      (setq org-ellipsis " ...")
+      (efs/org-font-setup)
+      (setq org-agenda-files
+            '("~/Orgs/")))
+  (defun nolinum ()
+    (global-display-line-numbers-mode 0)
+  )
+(add-hook 'org-mode-hook 'nolinum)
+
+(global-set-key (kbd "C-c c") #'org-capture)
+
+
+(setq org-capture-templates '(("t" "Todo [inbox]" entry
+                             (file+headline "~/Orgs/inbox.org" "Tasks")
+                             "* TODO %i%?")
+                            ("T" "Tickler" entry
+                             (file+headline "~/Orgs/tickler.org" "Tickler")
+                             "* %i%? \n %U")))
+
+(setq org-refile-targets '(("~/Orgs/agenda.org" :maxlevel . 3)
+                         ("~/Orgs/someday.org" :level . 1)
+                         ("~/Orgs/tickler.org" :maxlevel . 2)))
 
 (use-package org-journal
 :defer t
@@ -811,3 +820,23 @@
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(use-package perspective
+  :bind
+  ("C-x k" . persp-kill-buffer*)         ; or use a nicer switcher, see below
+  :custom
+  (persp-mode-prefix-key (kbd "C-c M-p"))  ; pick your own prefix key here
+  :init
+  (persp-mode))
+
+
+     (rune/leader-keys
+       "p"  '(:ignore t :which-key "Perspective")
+       "ps" '(persp-switch :which-key "Switch perspective")
+       "pm" '(persp-merge :which-key "Merge perspective")
+       )
+
+     (rune/leader-keys
+       "]" '(persp-next :which-key "Next perspective")
+       "[" '(persp-prev :which-key "Prev perspective")
+       )
