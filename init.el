@@ -373,7 +373,10 @@
                              "* TODO %i%?")
                             ("T" "Tickler" entry
                              (file+headline "~/Orgs/tickler.org" "Tickler")
-                             "* %i%? \n %U")))
+                             "* %i%? \n %U")
+                            ("b" "Braindump" entry
+                             (file+headline "~/Orgs/braindump.org" "Braindump")
+                             "* %? \n")))
 
 (setq org-refile-targets '(("~/Orgs/agenda.org" :maxlevel . 3)
                          ("~/Orgs/someday.org" :level . 1)
