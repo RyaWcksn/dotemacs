@@ -351,6 +351,25 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 
+** Blamer
+#+begin_src emacs-lisp
+(use-package blamer
+  :ensure t
+  :defer 20
+  :custom
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :custom-face
+  (blamer-face ((t :foreground "#7a88cf"
+                    :background nil
+                    :height 140
+                    :italic t)))
+  :config
+  (global-blamer-mode 1))
+#+end_src
+
+#+RESULTS:
+
 * Flycheck
 ** Flycheck
 #+begin_src emacs-lisp
@@ -845,6 +864,10 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 
+**** JS
+#+begin_src emacs-lisp
+
+#+end_src
 *** Typescript
 #+begin_src emacs-lisp
   (use-package typescript-mode
@@ -856,6 +879,27 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 | lsp | evil-collection-typescript-mode-set-evil-shift-width |
+
+*** Java
+#+begin_src emacs-lisp
+  (use-package lsp-java
+    :if (executable-find "mvn")
+    :init
+    :config (add-hook 'java-mode-hook 'lsp)
+    (use-package request :defer t)
+    :custom
+    (lsp-java-server-install-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/server/"))
+    (lsp-java-workspace-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/workspace/")))
+  (require 'lsp-java-boot)
+  (add-hook 'lsp-mode-hook #'lsp-lens-mode)
+  (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+  (setq lsp-java-java-path
+        "/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java")
+
+#+end_src
+
+#+RESULTS:
+: /Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java
 
 * Spotify
 ** Smudge
@@ -911,7 +955,7 @@ Doom modeline for showing bunch of stuffs
 ** Elcord
 #+begin_src emacs-lisp
 (use-package elcord :ensure t)
-#+end_src
+#+end_src oe
 * Music Player
 ** EMMS
 #+begin_src emacs-lisp
@@ -953,6 +997,7 @@ Doom modeline for showing bunch of stuffs
 ** Neotree
 #+begin_src emacs-lisp
   (use-package neotree :ensure t)
+  (setq neo-smart-open t)
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
   (setq centaur-tabs-set-icons t)
 
@@ -1177,6 +1222,7 @@ Doom modeline for showing bunch of stuffs
          "p"  '(:ignore t :which-key "Perspective")
          "ps" '(persp-switch :which-key "Switch perspective")
          "pm" '(persp-merge :which-key "Merge perspective")
+         "pb" '(persp-list-buffers :which-key "Buffers perspective")
          )
 
        (rune/leader-keys

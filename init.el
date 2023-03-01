@@ -235,6 +235,20 @@
     "g" '(:ignore t :which-key "Git")
     "gs" '(open-magit-in-vertical-split :which-key "Magit"))
 
+(use-package blamer
+  :ensure t
+  :defer 20
+  :custom
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :custom-face
+  (blamer-face ((t :foreground "#7a88cf"
+                    :background nil
+                    :height 140
+                    :italic t)))
+  :config
+  (global-blamer-mode 1))
+
 (use-package flycheck :ensure t)
 
 (use-package dap-mode
@@ -576,7 +590,15 @@
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
 
-(custom-set-variables '(go-add-tags-style 'lower-camel-case))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(go-add-tags-style 'lower-camel-case)
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(java-snippets dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)
@@ -595,11 +617,27 @@
 
 (use-package react-snippets)
 
+
+
 (use-package typescript-mode
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.tsx.*$" . typescript-mode)))
 (add-hook 'typescript-mode-hook #'lsp)
+
+(use-package lsp-java
+  :if (executable-find "mvn")
+  :init
+  :config (add-hook 'java-mode-hook 'lsp)
+  (use-package request :defer t)
+  :custom
+  (lsp-java-server-install-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/server/"))
+  (lsp-java-workspace-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/workspace/")))
+(require 'lsp-java-boot)
+(add-hook 'lsp-mode-hook #'lsp-lens-mode)
+(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+(setq lsp-java-java-path
+      "/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java")
 
 (use-package smudge
   :ensure t)
@@ -636,8 +674,6 @@
   (yas-global-mode 1)
   )
 
-(use-package elcord :ensure t)
-
 (use-package emms :ensure t)
 (require 'emms-setup)
 (emms-all)
@@ -667,6 +703,7 @@
    )))
 
 (use-package neotree :ensure t)
+(setq neo-smart-open t)
 (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 (setq centaur-tabs-set-icons t)
 
@@ -837,9 +874,16 @@
        "p"  '(:ignore t :which-key "Perspective")
        "ps" '(persp-switch :which-key "Switch perspective")
        "pm" '(persp-merge :which-key "Merge perspective")
+       "pb" '(persp-list-buffers :which-key "Buffers perspective")
        )
 
      (rune/leader-keys
        "]" '(persp-next :which-key "Next perspective")
        "[" '(persp-prev :which-key "Prev perspective")
        )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

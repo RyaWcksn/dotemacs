@@ -2,16 +2,21 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("CT"
+(("org-refile-last-stored"
+ (filename . "~/Orgs/agenda.org")
+ (front-context-string . "*** TODO Impleme")
+ (rear-context-string . "on using GITHUB\n")
+ (position . 2724))
+("CT"
  (filename . "~/Projects/Central/")
  (front-context-string . "  total used in ")
  (rear-context-string . "ojects/Central:\n")
  (position . 34))
 ("org-capture-last-stored"
- (filename . "~/Orgs/roam/daily/2023-01-30.org")
- (front-context-string . "* Morning Routin")
- (rear-context-string . "tle: 2023-01-30\n")
- (position . 88))
+ (filename . "~/Orgs/braindump.org")
+ (front-context-string . "** Something str")
+ (rear-context-string)
+ (position . 13))
 ("Sandbox"
  (filename . "~/Sandbox/")
  (front-context-string . "c\n  drwxrwxr-x  ")
