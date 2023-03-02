@@ -17,7 +17,7 @@
 (setq user-full-name "Pramudya Arya Wicaksana")
 
 (setq byte-compile-warnings '(cl-functions))
-
+(setq ring-bell-function 'ignore)
   ;; To set the garbage collection threshold to high (100 MB) since LSP client-server communication generates a lot of output/garbage
 (setq gc-cons-threshold 100000000)
 ;; To increase the amount of data Emacs reads from a process
@@ -497,28 +497,44 @@
         org-roam-ui-open-on-start t))
 
 (use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp
-  )
-  (defun ime-go-before-save ()
-    (interactive)
-    (when lsp-mode
-      (lsp-organize-imports)
-      (lsp-format-buffer)))
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+           ;; if you want which-key integration
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp
+    :config
+        (setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
+        (with-eval-after-load 'lsp-intelephense
+          (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
+        (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
 
-(setq lsp-completion-provider :none)
-(setq lsp-ui-doc-show-with-cursor t)
+    )
+    (defun ime-go-before-save ()
+      (interactive)
+      (when lsp-mode
+        (lsp-organize-imports)
+        (lsp-format-buffer)))
 
- (use-package lsp-ui
-  :ensure t
-  :config
-  (setq lsp-ui-sideline-ignore-duplicate t)
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+  (setq lsp-completion-provider :none)
+  (setq lsp-ui-doc-show-with-cursor t)
+
+   (use-package lsp-ui
+    :ensure t
+    :config
+    (setq lsp-ui-sideline-ignore-duplicate t)
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+    :init (setq lsp-ui-doc-delay 1.5
+      lsp-ui-doc-position 'bottom
+          lsp-ui-doc-max-width 100)
+    )
+
+  (use-package helm-lsp
+:ensure t
+:after (lsp-mode)
+:commands (helm-lsp-workspace-symbol)
+:init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
 
 (rune/leader-keys
   "l"  '(:ignore t :which-key "LSP")
@@ -598,7 +614,7 @@
  '(go-add-tags-style 'lower-camel-case)
  '(helm-minibuffer-history-key "M-p")
  '(package-selected-packages
-   '(java-snippets dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
+   '(perspective multiple-cursors tree-sitter-langs tree-sitter projectile neotree calfw-cal calfw-ical calfw-org calfw emms smudge lsp-java typescript-mode react-snippets rjsx-mode flycheck-golangci-lint gotest godoctor go-gen-test go-add-tags go-fill-struct go-mode dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)

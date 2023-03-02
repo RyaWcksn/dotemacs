@@ -51,7 +51,7 @@ Currently i'm using =Fira code retina= as my font
   (setq user-full-name "Pramudya Arya Wicaksana")
 
   (setq byte-compile-warnings '(cl-functions))
-
+  (setq ring-bell-function 'ignore)
     ;; To set the garbage collection threshold to high (100 MB) since LSP client-server communication generates a lot of output/garbage
   (setq gc-cons-threshold 100000000)
   ;; To increase the amount of data Emacs reads from a process
@@ -104,7 +104,7 @@ Currently i'm using =Fira code retina= as my font
 #+end_src
 
 #+RESULTS:
-| /usr/local/sbin | /usr/local/bin | /usr/sbin | /usr/bin | /sbin | /bin | /usr/games | /usr/local/games | /snap/bin | /snap/bin | /usr/local/sbin | /usr/local/bin | /usr/sbin | /usr/bin | /sbin | /bin | /usr/games | /usr/local/games | /snap/bin | /snap/bin | /usr/local/sbin | /usr/local/bin | /usr/sbin | /usr/bin | /sbin | /bin | /usr/games | /usr/local/games | /snap/bin | /snap/bin | /usr/lib/emacs/27.1/x86_64-linux-gnu |
+| /Users/senja/Downloads/google-cloud-sdk/bin | /Library/TeX/texbin | /usr/local/opt/openvpn/sbin | /usr/local/opt/php@7.3/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /Library/TeX/texbin | /usr/local/opt/openvpn/sbin | /usr/local/opt/php@7.3/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/bin | /usr/local/go/bin | /opt/X11/bin | /Library/Apple/usr/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/go/bin | /Users/senja/go/bin | /usr/local/go/bin | /Users/senja/go/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /Library/TeX/texbin | /usr/local/opt/openvpn/sbin | /usr/local/opt/php@7.3/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/bin | /usr/local/go/bin | /opt/X11/bin | /Library/Apple/usr/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/go/bin | /Users/senja/go/bin | /Users/senja/Downloads/google-cloud-sdk/bin | /usr/local/bin | /usr/local/go/bin | /opt/X11/bin | /Library/Apple/usr/bin | /Users/senja/go/bin | /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/Cellar/emacs-plus@28/28.2/libexec/emacs/28.2/x86_64-apple-darwin20.4.0 |
 
 ** Dashboard
 Startup page using Mugita Hikaru image as banner and show bunch of useful shortcuts!
@@ -696,35 +696,51 @@ Doom modeline for showing bunch of stuffs
 * LSP
 ** LSP mode
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-           ;; if you want which-key integration
-           (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp
-    )
-    (defun ime-go-before-save ()
-      (interactive)
-      (when lsp-mode
-        (lsp-organize-imports)
-        (lsp-format-buffer)))
+    (use-package lsp-mode
+      :init
+      ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+      (setq lsp-keymap-prefix "C-c l")
+      :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+             ;; if you want which-key integration
+             (lsp-mode . lsp-enable-which-key-integration))
+      :commands lsp
+      :config
+          (setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
+          (with-eval-after-load 'lsp-intelephense
+            (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
+          (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
 
-  (setq lsp-completion-provider :none)
-  (setq lsp-ui-doc-show-with-cursor t)
+      )
+      (defun ime-go-before-save ()
+        (interactive)
+        (when lsp-mode
+          (lsp-organize-imports)
+          (lsp-format-buffer)))
 
-   (use-package lsp-ui
-    :ensure t
-    :config
-    (setq lsp-ui-sideline-ignore-duplicate t)
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+    (setq lsp-completion-provider :none)
+    (setq lsp-ui-doc-show-with-cursor t)
+
+     (use-package lsp-ui
+      :ensure t
+      :config
+      (setq lsp-ui-sideline-ignore-duplicate t)
+      (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+      :init (setq lsp-ui-doc-delay 1.5
+        lsp-ui-doc-position 'bottom
+            lsp-ui-doc-max-width 100)
+      )
+
+    (use-package helm-lsp
+  :ensure t
+  :after (lsp-mode)
+  :commands (helm-lsp-workspace-symbol)
+  :init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
 
 
 #+end_src
 
 #+RESULTS:
-: t
+: helm-lsp-workspace-symbol
 
 ** Mapping
 #+begin_src emacs-lisp
