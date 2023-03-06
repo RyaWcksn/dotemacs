@@ -9,6 +9,8 @@
 #+LaTeX_HEADER: \usepackage{fancyhdr}
 #+LATEX_HEADER: \pagestyle{fancy}
 #+LaTeX_HEADER: \usepackage{amssymb,amsmath}
+#+LaTeX_HEADER: \usepackage{minted}
+#+LaTeX_HEADER: \usepackage{listings}
 #+LaTeX_HEADER: \usepackage{fancyhdr} %For headers and footers
 #+LaTeX_HEADER: \pagestyle{fancy} %For headers and footers
 #+LaTeX_HEADER: \usepackage{lastpage} %For getting page x of y
@@ -23,7 +25,8 @@
 * UI
 
 ** Package manager
-#+begin_src emacs-lisp
+
+#+begin_src emacs-lisp :exports code
   (require 'package)
   (setq package-archives
         '(("melpa" . "https://melpa.org/packages/")
@@ -725,9 +728,6 @@ Doom modeline for showing bunch of stuffs
       :config
       (setq lsp-ui-sideline-ignore-duplicate t)
       (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-      :init (setq lsp-ui-doc-delay 1.5
-        lsp-ui-doc-position 'bottom
-            lsp-ui-doc-max-width 100)
       )
 
     (use-package helm-lsp
@@ -748,10 +748,11 @@ Doom modeline for showing bunch of stuffs
     "l"  '(:ignore t :which-key "LSP")
     "lg" '(lsp-goto-type-definition :which-key "Go to definition")
     "li" '(lsp-goto-implementation :which-key "Go to implementation")
-    "lc" '(lsp-execute-code-action :which-key "Code action")
+    "lc" '(htlm :which-key "Code action")
     "ll" '(lsp-avy-lens :which-key "Code lens")
     "lr" '(lsp-rename :which-key "Code lens")
     "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
+    "le" '(helm-lsp-diagnostics :which-key "Error diagnostics")
     "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
 
 
@@ -1140,84 +1141,101 @@ Doom modeline for showing bunch of stuffs
 #+RESULTS:
 
 * Latex
-#+begin_src emacs-lisp
-  (require 'ox-latex)
-  (setq org-src-fontify-natively t)
-  (add-to-list 'org-latex-packages-alist '("" "listings"))
-  (setq org-latex-listing t)
-  (add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
 
 
-  (setq org-latex-pdf-process
+#+begin_src emacs-lisp :export code
+    (require 'ox-latex)
+
+  (setq org-latex-listings 't)
+
+    (setq org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))
+
+        org-latex-pdf-process
         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
-  (add-to-list 'org-latex-classes
-               '("assignment"
-                 "\\documentclass[a4paper,12pt]{report}
-    \\usepackage{listings}
-    \\renewcommand{\\chaptername}{Lab}
-    \\makeatletter
-    \\renewcommand{\\maketitle}{
-      \\begin{titlepage}
-        \\begin{center}
-          \\vspace*{2em}
-          \\Huge \\textbf{ASSIGNMENT} \\\\
-          \\vspace{4em}
-          \\Huge \\textbf{\\@title} \\\\
-          \\vspace{4em}
-          \\Large \\textbf{\\@date} \\\\
-          \\bigskip
-          \\Large \\textbf{\\@author} \\\\
-          \\medskip
-          \\large 2242805 \\\\
-          \\bigskip
-          \\includegraphics[width=16em]{../../manit-logo.png} \\\\
-          \\bigskip
-          \\large Teknik Informatika \\\\
-          \\large STMIK AMIK Bandung \\\\
-        \\end{center}
-      \\end{titlepage}
-    }
-    \\makeatother
-    \\usepackage[margin=0.7in]{geometry}"
-                 ("\\chapter{%s}" . "\\chapter*{%s}")
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org-latex-minted-langs '(ipython "python"))
 
 
-  (add-to-list 'org-latex-classes
-               '("research"
-                 "\\documentclass[a4paper,12pt]{report}
-    \\usepackage{listings}
-    \\makeatletter
-    \\renewcommand{\\maketitle}{
-      \\begin{titlepage}
-        \\begin{center}
-          \\vspace*{2em}
-          \\Huge \\textbf{REPORT} \\\\
-          \\vspace{4em}
-          \\Huge \\textbf{\\@title} \\\\
-          \\vspace{4em}
-          \\Large \\textbf{\\@date} \\\\
-          \\bigskip
-          \\Large \\textbf{\\@author} \\\\
-          \\medskip
-        \\end{center}
-      \\end{titlepage}
-    }
-    \\makeatother
-    \\usepackage[margin=0.7in]{geometry}"
-                 ("\\chapter{%s}" . "\\chapter*{%s}")
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (setq org-src-fontify-natively t)
+
+
+
+    ;; (setq org-latex-pdf-process
+    ;;       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+    ;;         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+    ;;         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+
+
+    (add-to-list 'org-latex-classes
+                 '("assignment"
+                   "\\documentclass[a4paper,12pt]{report}
+      \\usepackage{listings}
+      \\renewcommand{\\chaptername}{Lab}
+      \\makeatletter
+      \\renewcommand{\\maketitle}{
+        \\begin{titlepage}
+          \\begin{center}
+            \\vspace*{2em}
+            \\Huge \\textbf{ASSIGNMENT} \\\\
+            \\vspace{4em}
+            \\Huge \\textbf{\\@title} \\\\
+            \\vspace{4em}
+            \\Large \\textbf{\\@date} \\\\
+            \\bigskip
+            \\Large \\textbf{\\@author} \\\\
+            \\medskip
+            \\large 2242805 \\\\
+            \\bigskip
+            \\includegraphics[width=16em]{../../manit-logo.png} \\\\
+            \\bigskip
+            \\large Teknik Informatika \\\\
+            \\large STMIK AMIK Bandung \\\\
+          \\end{center}
+        \\end{titlepage}
+      }
+      \\makeatother
+      \\usepackage[margin=0.7in]{geometry}"
+                   ("\\chapter{%s}" . "\\chapter*{%s}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+
+    (add-to-list 'org-latex-classes
+                 '("research"
+                   "\\documentclass[a4paper,12pt]{report}
+      \\usepackage{listings}
+      \\makeatletter
+      \\renewcommand{\\maketitle}{
+        \\begin{titlepage}
+          \\begin{center}
+            \\vspace*{2em}
+            \\Huge \\textbf{REPORT} \\\\
+            \\vspace{4em}
+            \\Huge \\textbf{\\@title} \\\\
+            \\vspace{4em}
+            \\Large \\textbf{\\@date} \\\\
+            \\bigskip
+            \\Large \\textbf{\\@author} \\\\
+            \\medskip
+          \\end{center}
+        \\end{titlepage}
+      }
+      \\makeatother
+      \\usepackage[margin=0.7in]{geometry}"
+                   ("\\chapter{%s}" . "\\chapter*{%s}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
 #+RESULTS:

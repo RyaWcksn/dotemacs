@@ -525,9 +525,6 @@
     :config
     (setq lsp-ui-sideline-ignore-duplicate t)
     (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-    :init (setq lsp-ui-doc-delay 1.5
-      lsp-ui-doc-position 'bottom
-          lsp-ui-doc-max-width 100)
     )
 
   (use-package helm-lsp
@@ -540,10 +537,11 @@
   "l"  '(:ignore t :which-key "LSP")
   "lg" '(lsp-goto-type-definition :which-key "Go to definition")
   "li" '(lsp-goto-implementation :which-key "Go to implementation")
-  "lc" '(lsp-execute-code-action :which-key "Code action")
+  "lc" '(htlm :which-key "Code action")
   "ll" '(lsp-avy-lens :which-key "Code lens")
   "lr" '(lsp-rename :which-key "Code lens")
   "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
+  "le" '(helm-lsp-diagnostics :which-key "Error diagnostics")
   "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
 
 (setq package-selected-packages 
@@ -606,15 +604,7 @@
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(go-add-tags-style 'lower-camel-case)
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(perspective multiple-cursors tree-sitter-langs tree-sitter projectile neotree calfw-cal calfw-ical calfw-org calfw emms smudge lsp-java typescript-mode react-snippets rjsx-mode flycheck-golangci-lint gotest godoctor go-gen-test go-add-tags go-fill-struct go-mode dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
+(custom-set-variables '(go-add-tags-style 'lower-camel-case))
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)
@@ -800,82 +790,97 @@
   "h"  '(helm-command-prefix :which-key "Helm"))
 
 (require 'ox-latex)
-(setq org-src-fontify-natively t)
-(add-to-list 'org-latex-packages-alist '("" "listings"))
-(setq org-latex-listing t)
-(add-to-list 'org-latex-default-packages-alist "\\PassOptionsToPackage{hyphens}{url}")
 
+(setq org-latex-listings 't)
 
-(setq org-latex-pdf-process
+  (setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+
+      org-latex-pdf-process
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
-(add-to-list 'org-latex-classes
-             '("assignment"
-               "\\documentclass[a4paper,12pt]{report}
-  \\usepackage{listings}
-  \\renewcommand{\\chaptername}{Lab}
-  \\makeatletter
-  \\renewcommand{\\maketitle}{
-    \\begin{titlepage}
-      \\begin{center}
-        \\vspace*{2em}
-        \\Huge \\textbf{ASSIGNMENT} \\\\
-        \\vspace{4em}
-        \\Huge \\textbf{\\@title} \\\\
-        \\vspace{4em}
-        \\Large \\textbf{\\@date} \\\\
-        \\bigskip
-        \\Large \\textbf{\\@author} \\\\
-        \\medskip
-        \\large 2242805 \\\\
-        \\bigskip
-        \\includegraphics[width=16em]{../../manit-logo.png} \\\\
-        \\bigskip
-        \\large Teknik Informatika \\\\
-        \\large STMIK AMIK Bandung \\\\
-      \\end{center}
-    \\end{titlepage}
-  }
-  \\makeatother
-  \\usepackage[margin=0.7in]{geometry}"
-               ("\\chapter{%s}" . "\\chapter*{%s}")
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-minted-langs '(ipython "python"))
 
 
-(add-to-list 'org-latex-classes
-             '("research"
-               "\\documentclass[a4paper,12pt]{report}
-  \\usepackage{listings}
-  \\makeatletter
-  \\renewcommand{\\maketitle}{
-    \\begin{titlepage}
-      \\begin{center}
-        \\vspace*{2em}
-        \\Huge \\textbf{REPORT} \\\\
-        \\vspace{4em}
-        \\Huge \\textbf{\\@title} \\\\
-        \\vspace{4em}
-        \\Large \\textbf{\\@date} \\\\
-        \\bigskip
-        \\Large \\textbf{\\@author} \\\\
-        \\medskip
-      \\end{center}
-    \\end{titlepage}
-  }
-  \\makeatother
-  \\usepackage[margin=0.7in]{geometry}"
-               ("\\chapter{%s}" . "\\chapter*{%s}")
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (setq org-src-fontify-natively t)
+
+
+
+  ;; (setq org-latex-pdf-process
+  ;;       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+  ;;         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+  ;;         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+
+
+  (add-to-list 'org-latex-classes
+               '("assignment"
+                 "\\documentclass[a4paper,12pt]{report}
+    \\usepackage{listings}
+    \\renewcommand{\\chaptername}{Lab}
+    \\makeatletter
+    \\renewcommand{\\maketitle}{
+      \\begin{titlepage}
+        \\begin{center}
+          \\vspace*{2em}
+          \\Huge \\textbf{ASSIGNMENT} \\\\
+          \\vspace{4em}
+          \\Huge \\textbf{\\@title} \\\\
+          \\vspace{4em}
+          \\Large \\textbf{\\@date} \\\\
+          \\bigskip
+          \\Large \\textbf{\\@author} \\\\
+          \\medskip
+          \\large 2242805 \\\\
+          \\bigskip
+          \\includegraphics[width=16em]{../../manit-logo.png} \\\\
+          \\bigskip
+          \\large Teknik Informatika \\\\
+          \\large STMIK AMIK Bandung \\\\
+        \\end{center}
+      \\end{titlepage}
+    }
+    \\makeatother
+    \\usepackage[margin=0.7in]{geometry}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+
+  (add-to-list 'org-latex-classes
+               '("research"
+                 "\\documentclass[a4paper,12pt]{report}
+    \\usepackage{listings}
+    \\makeatletter
+    \\renewcommand{\\maketitle}{
+      \\begin{titlepage}
+        \\begin{center}
+          \\vspace*{2em}
+          \\Huge \\textbf{REPORT} \\\\
+          \\vspace{4em}
+          \\Huge \\textbf{\\@title} \\\\
+          \\vspace{4em}
+          \\Large \\textbf{\\@date} \\\\
+          \\bigskip
+          \\Large \\textbf{\\@author} \\\\
+          \\medskip
+        \\end{center}
+      \\end{titlepage}
+    }
+    \\makeatother
+    \\usepackage[margin=0.7in]{geometry}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 (use-package perspective
   :bind
@@ -897,9 +902,3 @@
        "]" '(persp-next :which-key "Next perspective")
        "[" '(persp-prev :which-key "Prev perspective")
        )
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
