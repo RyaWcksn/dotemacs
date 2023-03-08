@@ -1,26 +1,14 @@
 #+author: Pramudya Arya Wicaksana
 #+TITLE: Vanilla Emacs configuration
+#+EMAIL: pram.aryawcksn@protonmail.ch
 #+SUBTITLE: Config for GO and Flutter development, also note taking!
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+property: header-args:shell :tangle "setup.sh"
-#+LATEX_CLASS: assignment
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper, 12pt]
 #+startup: fold
 #+STARTUP: inlineimages
-#+LaTeX_HEADER: \usepackage{fancyhdr}
-#+LATEX_HEADER: \pagestyle{fancy}
-#+LaTeX_HEADER: \usepackage{amssymb,amsmath}
-#+LaTeX_HEADER: \usepackage{minted}
-#+LaTeX_HEADER: \usepackage{listings}
-#+LaTeX_HEADER: \usepackage{fancyhdr} %For headers and footers
-#+LaTeX_HEADER: \pagestyle{fancy} %For headers and footers
-#+LaTeX_HEADER: \usepackage{lastpage} %For getting page x of y
-#+LaTeX_HEADER: \usepackage{url} %Formatting of yrls
-#+LaTeX_HEADER: \lhead{ivanhanigan.github.com}
-#+LaTeX_HEADER: \chead{}
-#+LaTeX_HEADER: \rhead{\today}
-#+LaTeX_HEADER: \lfoot{Draft}
-#+LaTeX_HEADER: \cfoot{}
-#+LaTeX_HEADER: \rfoot{\thepage\ of \pageref{LastPage}}
+#+SETUPFILE: ~/.emacs.d/setupfile.org
 
 * UI
 
@@ -112,6 +100,7 @@ Currently i'm using =Fira code retina= as my font
 ** Dashboard
 Startup page using Mugita Hikaru image as banner and show bunch of useful shortcuts!
 
+#+CAPTION: Mugita Hikaru
 [[./hikaru.png]]
 
 #+begin_src emacs-lisp
@@ -1145,6 +1134,14 @@ Doom modeline for showing bunch of stuffs
 
 #+begin_src emacs-lisp :export code
   (require 'ox-latex)
+
+
+
+  (defun nd-email-filter (contents backend info)
+  (let ((email (plist-get info :email)))
+    (replace-regexp-in-string "@EMAIL@" email contents t)))
+  
+  (add-to-list 'org-export-filter-final-output-functions (function nd-email-filter))
   (setq org-latex-listings 't)
   (setq org-latex-listings 'minted
       org-latex-packages-alist '(("" "minted"))
@@ -1159,7 +1156,6 @@ Doom modeline for showing bunch of stuffs
   (add-to-list 'org-latex-classes
                '("assignment"
                  "\\documentclass[a4paper,12pt]{report}
-    \\usepackage{listings}
     \\renewcommand{\\chaptername}{Lab}
     \\makeatletter
     \\renewcommand{\\maketitle}{
@@ -1225,7 +1221,7 @@ Doom modeline for showing bunch of stuffs
 #+end_src
 
 #+RESULTS:
-| assignment | \documentclass[a4paper,12pt]{report} |
+| research | \documentclass[a4paper,12pt]{report} |
 
 * Prespective-el
 #+begin_src emacs-lisp

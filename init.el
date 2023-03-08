@@ -603,15 +603,7 @@
   "cgf" '(go-fill-struct :which-key "Go fill struct")
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(go-add-tags-style 'lower-camel-case)
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(carbon-now-sh pandoc dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company lsp-ui company hover)))
+(custom-set-variables '(go-add-tags-style 'lower-camel-case))
 
 (use-package flycheck-golangci-lint
   :hook (go-mode . flycheck-golangci-lint-setup)
@@ -797,6 +789,14 @@
   "h"  '(helm-command-prefix :which-key "Helm"))
 
 (require 'ox-latex)
+
+
+
+(defun nd-email-filter (contents backend info)
+(let ((email (plist-get info :email)))
+  (replace-regexp-in-string "@EMAIL@" email contents t)))
+
+(add-to-list 'org-export-filter-final-output-functions (function nd-email-filter))
 (setq org-latex-listings 't)
 (setq org-latex-listings 'minted
     org-latex-packages-alist '(("" "minted"))
@@ -811,7 +811,6 @@
 (add-to-list 'org-latex-classes
              '("assignment"
                "\\documentclass[a4paper,12pt]{report}
-  \\usepackage{listings}
   \\renewcommand{\\chaptername}{Lab}
   \\makeatletter
   \\renewcommand{\\maketitle}{
@@ -895,9 +894,3 @@
        "]" '(persp-next :which-key "Next perspective")
        "[" '(persp-prev :which-key "Prev perspective")
        )
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

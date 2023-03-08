@@ -1,11 +1,36 @@
-#+LATEX_HEADER: \renewcommand{\maketitle}{
-#+LATEX_HEADER: \begin{titlepage}
-#+LATEX_HEADER: \begin{center}
-#+LATEX_HEADER: \includegraphics[width=0.6]{path/to/image}
-#+LATEX_HEADER: \vfill
-#+LATEX_HEADER: {\Large \@title}\\[0.5cm]
-#+LATEX_HEADER: {\large \@author}\\[0.5cm]
-#+LATEX_HEADER: {\large \@email}\\[0.5cm]
-#+LATEX_HEADER: \end{center}
-#+LATEX_HEADER: \end{titlepage}
-#+LATEX_HEADER: }
+#+LaTeX_HEADER:\makeatletter
+#+LaTeX_HEADER:\renewcommand{\maketitle}{
+#+LaTeX_HEADER:  \begin{titlepage}
+#+LaTeX_HEADER:    \begin{center}
+#+LaTeX_HEADER:      \Huge \textbf{ASSIGNMENT} \\
+#+LaTeX_HEADER:      \vspace{1em}
+#+LaTeX_HEADER:      \Huge \textbf{\@title} \\
+#+LaTeX_HEADER:      \bigbreak
+#+LaTeX_HEADER:      \vspace{2em}
+#+LaTeX_HEADER:      \includegraphics[width=8em]{./logo.png} \\
+#+LaTeX_HEADER:      \bigbreak
+#+LaTeX_HEADER:      \vspace{1em}
+#+LaTeX_HEADER:      \Large \textbf{\@author} \\
+#+LaTeX_HEADER:      \large 2242805  \\
+#+LaTeX_HEADER:      \bigbreak
+#+LaTeX_HEADER:      \vspace{4em}
+#+LaTeX_HEADER:      \large Teknik Informatika \\
+#+LaTeX_HEADER:      \large STMIK AMIK Bandung \\
+#+LaTeX_HEADER:      \Large \@date \\
+#+LaTeX_HEADER:    \end{center}
+#+LaTeX_HEADER:  \end{titlepage}
+#+LaTeX_HEADER:}
+#+LATEX_HEADER: \newcommand\sectionbreak{\clearpage}
+#+LATEX: \listoffigures
+#+LATEX: \listoftables
+#+LATEX: \listoflistings
+
+
+#+LaTeX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancy}
+#+LaTeX_HEADER: \usepackage{amssymb,amsmath}
+#+LaTeX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage[AUTO]{inputenc}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{amsmath, amsthm, amssymb}
+#+LATEX_HEADER: \usepackage[table, xcdraw]{xcolor}
