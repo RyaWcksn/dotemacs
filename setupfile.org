@@ -1,0 +1,11 @@
+#+LATEX_HEADER: \renewcommand{\maketitle}{
+#+LATEX_HEADER: \begin{titlepage}
+#+LATEX_HEADER: \begin{center}
+#+LATEX_HEADER: \includegraphics[width=0.6]{path/to/image}
+#+LATEX_HEADER: \vfill
+#+LATEX_HEADER: {\Large \@title}\\[0.5cm]
+#+LATEX_HEADER: {\large \@author}\\[0.5cm]
+#+LATEX_HEADER: {\large \@email}\\[0.5cm]
+#+LATEX_HEADER: \end{center}
+#+LATEX_HEADER: \end{titlepage}
+#+LATEX_HEADER: }
