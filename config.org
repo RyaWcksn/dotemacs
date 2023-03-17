@@ -201,7 +201,7 @@ Doom modeline for showing bunch of stuffs
   (rune/leader-keys
        "t"  '(:ignore t :which-key "Toggles")
        "tt" '(counsel-load-theme :which-key "Choose theme")
-       ";" '(counsel-M-x :which-key "Meta")
+       ";" '(helm-M-x :which-key "Meta")
        "/" '(comment-region :which-key "Comment region")
 
        "w"  '(:ignore t :which-key "Window")
@@ -361,6 +361,52 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 : [nil 0 20 0 nil require (blamer nil t) idle 0 nil]
+
+** Merge
+#+begin_src emacs-lisp
+  (use-package hydra)
+  (use-package smerge-mode
+    :config
+    (defhydra hydra-smerge (:color red :hint nil)
+      "
+  Navigate       Keep               other
+  ----------------------------------------
+  _j_: previous  _RET_: current       _e_: ediff
+  _k_: next      _m_: mine  <<      _u_: undo
+  _j_: up        _o_: other >>      _r_: refine
+  _k_: down      _a_: combine       _q_: quit
+                 _b_: base
+  "
+      ("k" smerge-next)
+      ("j" smerge-prev)
+      ("RET" smerge-keep-current)
+      ("m" smerge-keep-mine)
+      ("o" smerge-keep-other)
+      ("b" smerge-keep-base)
+      ("a" smerge-keep-all)
+      ("e" smerge-ediff)
+      ("J" previous-line)
+      ("K" forward-line)
+      ("r" smerge-refine)
+      ("u" undo)
+      ("q" nil :exit t))
+
+    (defun enable-smerge-maybe ()
+      (when (and buffer-file-name (vc-backend buffer-file-name))
+        (save-excursion
+          (goto-char (point-min))
+          (when (re-search-forward "^<<<<<<< " nil t)
+            (smerge-mode +1)
+            (hydra-smerge/body))))))
+
+
+  (rune/leader-keys
+       "gm"  '(scimax-smerge/body :which-key "Toggle smerge")
+       )
+
+#+end_src
+
+#+RESULTS:
 
 * Flycheck
 ** Flycheck
