@@ -945,13 +945,20 @@ Doom modeline for showing bunch of stuffs
   (require 'lsp-java-boot)
   (add-hook 'lsp-mode-hook #'lsp-lens-mode)
   (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+(if (eq system-type 'darwin)
+    ;; Configuration for macOS
+    (progn
   (setq lsp-java-java-path
-        "/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java")
+        "/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java"))
+  ;; Configuration for Linux
+  (progn
+  (setq lsp-java-java-path
+        "/opt/jdk-13.0.1/bin/java")))
 
 #+end_src
 
 #+RESULTS:
-: /Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java
+: /opt/jdk-13.0.1/bin/java
 
 * Spotify
 ** Smudge
