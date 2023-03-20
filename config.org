@@ -786,6 +786,7 @@ Doom modeline for showing bunch of stuffs
     "lc" '(helm-lsp-code-actions :which-key "Code action")
     "ll" '(lsp-avy-lens :which-key "Code lens")
     "lr" '(lsp-rename :which-key "Code lens")
+    "lf" '(lsp-format-buffer :which-key "Format buffer")
     "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
     "le" '(helm-lsp-diagnostics :which-key "Error diagnostics")
     "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
@@ -952,6 +953,14 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 : /Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java
+
+*** Robot framework
+#+begin_src emacs-lisp
+(add-hook 'robot-mode-hook #'lsp)
+#+end_src
+
+#+RESULTS:
+| lsp |
 
 * Spotify
 ** Smudge

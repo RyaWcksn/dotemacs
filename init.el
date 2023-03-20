@@ -579,6 +579,7 @@ _k_: down      _a_: combine       _q_: quit
   "lc" '(helm-lsp-code-actions :which-key "Code action")
   "ll" '(lsp-avy-lens :which-key "Code lens")
   "lr" '(lsp-rename :which-key "Code lens")
+  "lf" '(lsp-format-buffer :which-key "Format buffer")
   "ld" '(lsp-ui-peek-find-definitions :which-key "Goto declaration")
   "le" '(helm-lsp-diagnostics :which-key "Error diagnostics")
   "la" '(lsp-ui-peek-find-implementation :which-key "Code implement"))
@@ -683,6 +684,8 @@ _k_: down      _a_: combine       _q_: quit
 (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
 (setq lsp-java-java-path
       "/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java")
+
+(add-hook 'robot-mode-hook #'lsp)
 
 (use-package smudge
   :ensure t)
