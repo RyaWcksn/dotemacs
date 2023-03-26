@@ -53,7 +53,6 @@
 (setq make-backup-files nil)
 
 (set-face-attribute 'default nil :height 120)
-(display-battery-mode 1)
 (display-time-mode 1)
 (hl-line-mode)
 
@@ -84,8 +83,23 @@
 
 (use-package doom-modeline
   :ensure t
-  :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
+
+(setq-default mode-line-format
+                '("%e"
+                  mode-line-front-space
+                  mode-line-mule-info
+                  mode-line-client
+                  mode-line-modified
+                  mode-line-remote
+                  mode-line-frame-identification
+                  mode-line-buffer-identification
+                  " "
+                  mode-line-position
+                  "  "
+                  mode-line-misc-info
+                  mode-line-end-spaces
+))
 
 (use-package centaur-tabs
   :ensure t
@@ -118,6 +132,8 @@
 (defun zsh-shell-mode-setup ()
   (setq-local comint-process-echoes t))
 (add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
+
+
 
 (use-package general
    :ensure t)
