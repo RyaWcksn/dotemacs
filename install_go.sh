@@ -1,30 +1,29 @@
 #!/bin/bash
 
 function gopher {
-cyan=`tput setaf 14` 
-beige=`tput setaf 215` 
-white=`tput setaf 15` 
-black=`tput setaf 0` 
-red=`tput setaf 9` 
-reset=`tput sgr0` 
-teeth="${white}UU" 
-if [[ "$1" == "vampire" ]]
-then
-	teeth="${red}VV" 
-fi
-echo "${cyan}      ´.-::::::-.´"
-echo "${cyan}  .:-::::::::::::::-:."
-echo "${cyan}  ´_::${white}:    ::    :${cyan}::_´"
-echo "${cyan}   .:${white}( O   :: O   )${cyan}:."
-echo "${cyan}   ´::${white}:   ${beige}(${black}..${beige})${white}   :${cyan}::."
-echo "${cyan}   ´:::::::${teeth}${cyan}:::::::´"
-echo "${cyan}   .::::::::::::::::."
-echo "${beige}   O${cyan}::::::::::::::::${beige}O"
-echo "${cyan}   -::::::::::::::::-"
-echo "${cyan}   ´::::::::::::::::´"
-echo "${cyan}    .::::::::::::::."
-echo "${beige}      oO${cyan}:::::::${beige}Oo"
-echo "${reset}"
+    cyan=`tput setaf 14` 
+    beige=`tput setaf 215` 
+    white=`tput setaf 15` 
+    black=`tput setaf 0` 
+    red=`tput setaf 9` 
+    reset=`tput sgr0` 
+    teeth="${white}UU" 
+    if [[ "$1" == "vampire" ]] then
+       teeth="${red}VV" 
+    fi
+       echo "${cyan}      ´.-::::::-.´"
+       echo "${cyan}  .:-::::::::::::::-:."
+       echo "${cyan}  ´_::${white}:    ::    :${cyan}::_´"
+       echo "${cyan}   .:${white}( O   :: O   )${cyan}:."
+       echo "${cyan}   ´::${white}:   ${beige}(${black}..${beige})${white}   :${cyan}::."
+       echo "${cyan}   ´:::::::${teeth}${cyan}:::::::´"
+       echo "${cyan}   .::::::::::::::::."
+       echo "${beige}   O${cyan}::::::::::::::::${beige}O"
+       echo "${cyan}   -::::::::::::::::-"
+       echo "${cyan}   ´::::::::::::::::´"
+       echo "${cyan}    .::::::::::::::."
+       echo "${beige}      oO${cyan}:::::::${beige}Oo"
+       echo "${reset}"
 }
 
 
@@ -81,10 +80,12 @@ download_source_code ()
             sudo tar -C /usr/local/ -xvf go$version.$os-$architecture.tar.gz 
 	    echo "Copy done!"
     fi
-    echo "Creating GO basepath..."
-    echo "export GOPATH=$HOME/go" >> $HOME/.zshrc
-    echo "export GOROOT=/usr/local/go" >> $HOME/.zshrc
-    echo "export PATH=\$PATH:\$GOROOT/bin:\$GOPATH/bin" >> $HOME/.zshrc
+    if [[ $(cat ~/.zshrc | grep GOPATH) == "" ]]; then
+	echo "Creating GO basepath..."
+	echo "export GOPATH=$HOME/go" >> $HOME/.zshrc
+	echo "export GOROOT=/usr/local/go" >> $HOME/.zshrc
+	echo "export PATH=\$PATH:\$GOROOT/bin:\$GOPATH/bin" >> $HOME/.zshrc
+    fi
     echo "GO Version ${version} is installed"
 }
 

@@ -53,7 +53,6 @@
 (setq make-backup-files nil)
 
 (set-face-attribute 'default nil :height 120)
-(display-battery-mode 1)
 (display-time-mode 1)
 (hl-line-mode)
 
@@ -84,8 +83,23 @@
 
 (use-package doom-modeline
   :ensure t
-  :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
+
+(setq-default mode-line-format
+                '("%e"
+                  mode-line-front-space
+                  mode-line-mule-info
+                  mode-line-client
+                  mode-line-modified
+                  mode-line-remote
+                  mode-line-frame-identification
+                  mode-line-buffer-identification
+                  " "
+                  mode-line-position
+                  "  "
+                  mode-line-misc-info
+                  mode-line-end-spaces
+))
 
 (use-package centaur-tabs
   :ensure t
@@ -118,6 +132,8 @@
 (defun zsh-shell-mode-setup ()
   (setq-local comint-process-echoes t))
 (add-hook 'shell-mode-hook #'zsh-shell-mode-setup)
+
+
 
 (use-package general
    :ensure t)
@@ -672,18 +688,25 @@ _k_: down      _a_: combine       _q_: quit
 (add-hook 'typescript-mode-hook #'lsp)
 
 (use-package lsp-java
-  :if (executable-find "mvn")
-  :init
-  :config (add-hook 'java-mode-hook 'lsp)
-  (use-package request :defer t)
-  :custom
-  (lsp-java-server-install-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/server/"))
-  (lsp-java-workspace-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/workspace/")))
-(require 'lsp-java-boot)
-(add-hook 'lsp-mode-hook #'lsp-lens-mode)
-(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
-(setq lsp-java-java-path
-      "/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java")
+    :if (executable-find "mvn")
+    :init
+    :config (add-hook 'java-mode-hook 'lsp)
+    (use-package request :defer t)
+    :custom
+    (lsp-java-server-install-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/server/"))
+    (lsp-java-workspace-dir (expand-file-name "~/.emacs.d/eclipse.jdt.ls/workspace/")))
+  (require 'lsp-java-boot)
+  (add-hook 'lsp-mode-hook #'lsp-lens-mode)
+  (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+(if (eq system-type 'darwin)
+    ;; Configuration for macOS
+    (progn
+  (setq lsp-java-java-path
+        "/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/bin/java"))
+  ;; Configuration for Linux
+  (progn
+  (setq lsp-java-java-path
+        "/opt/jdk-13.0.1/bin/java")))
 
 (add-hook 'robot-mode-hook #'lsp)
 

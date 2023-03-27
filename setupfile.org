@@ -7,7 +7,7 @@
 #+LaTeX_HEADER:      \Huge \textbf{\@title} \\
 #+LaTeX_HEADER:      \bigbreak
 #+LaTeX_HEADER:      \vspace{2em}
-#+LaTeX_HEADER:      \includegraphics[width=8em]{./logo.png} \\
+#+LaTeX_HEADER:      \includegraphics[width=8em]{~/.emacs.d/logo.png} \\
 #+LaTeX_HEADER:      \bigbreak
 #+LaTeX_HEADER:      \vspace{1em}
 #+LaTeX_HEADER:      \Large \textbf{\@author} \\
@@ -20,7 +20,7 @@
 #+LaTeX_HEADER:    \end{center}
 #+LaTeX_HEADER:  \end{titlepage}
 #+LaTeX_HEADER:}
-#+LATEX_HEADER: \newcommand\sectionbreak{\clearpage}
+#+LaTeX_HEADER:  \renewcommand{\pagenumbering{arabic}}
 #+LATEX: \listoffigures
 #+LATEX: \listoftables
 #+LATEX: \listoflistings
@@ -28,9 +28,18 @@
 
 #+LaTeX_HEADER: \usepackage{fancyhdr}
 #+LATEX_HEADER: \pagestyle{fancy}
+#+LaTeX_HEADER: \fancyfoot{}
+#+LaTeX_HEADER: \fancyfoot[L]{\@author}
+#+LaTeX_HEADER: \fancyfoot[C]{\thepage}
+#+LaTeX_HEADER: \fancyfoot[R]{\href{mailto:pram.aryawcksn@protonmail.ch}{pram.aryawcksn@protonmail.ch}}}
 #+LaTeX_HEADER: \usepackage{amssymb,amsmath}
 #+LaTeX_HEADER: \usepackage{minted}
 #+LATEX_HEADER: \usepackage[AUTO]{inputenc}
 #+LATEX_HEADER: \usepackage{graphicx}
 #+LATEX_HEADER: \usepackage{amsmath, amsthm, amssymb}
 #+LATEX_HEADER: \usepackage[table, xcdraw]{xcolor}
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=black}
+
+#+LaTeX_HEADER: \let\oldsection\section
+#+LaTeX_HEADER: \renewcommand\section{\clearpage\oldsection}
+
