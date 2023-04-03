@@ -601,7 +601,6 @@ _k_: down      _a_: combine       _q_: quit
         (with-eval-after-load 'lsp-intelephense
           (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
         (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-
     )
     (defun ime-go-before-save ()
       (interactive)
@@ -746,6 +745,18 @@ _k_: down      _a_: combine       _q_: quit
         "/opt/jdk-13.0.1/bin/java")))
 
 (add-hook 'robot-mode-hook #'lsp)
+
+(use-package python-mode
+  :hook (python-mode . lsp-deferred)
+  :custom
+  (python-shell-interpreter "python3")
+  )
+
+(use-package pyvenv
+  :demand t
+  :config
+  (setq pyvenv-workon "emacs")  ; Default venv
+  (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
 
 (use-package smudge
   :ensure t)

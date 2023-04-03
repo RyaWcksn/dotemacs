@@ -813,7 +813,6 @@ Doom modeline for showing bunch of stuffs
           (with-eval-after-load 'lsp-intelephense
             (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
           (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-
       )
       (defun ime-go-before-save ()
         (interactive)
@@ -1034,6 +1033,24 @@ Doom modeline for showing bunch of stuffs
 
 #+RESULTS:
 | lsp |
+
+*** Python
+#+begin_src emacs-lisp
+  (use-package python-mode
+    :hook (python-mode . lsp-deferred)
+    :custom
+    (python-shell-interpreter "python3")
+    )
+
+  (use-package pyvenv
+    :demand t
+    :config
+    (setq pyvenv-workon "emacs")  ; Default venv
+    (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
+#+end_src
+
+#+RESULTS:
+: t
 
 * Spotify
 ** Smudge
