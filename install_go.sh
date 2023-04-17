@@ -8,9 +8,6 @@ function gopher {
     red=`tput setaf 9` 
     reset=`tput sgr0` 
     teeth="${white}UU" 
-    if [[ "$1" == "vampire" ]] then
-       teeth="${red}VV" 
-    fi
        echo "${cyan}      ´.-::::::-.´"
        echo "${cyan}  .:-::::::::::::::-:."
        echo "${cyan}  ´_::${white}:    ::    :${cyan}::_´"

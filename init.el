@@ -588,41 +588,46 @@ _k_: down      _a_: combine       _q_: quit
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
-(use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-           ;; if you want which-key integration
-           (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp
-    :config
-        (setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
-        (with-eval-after-load 'lsp-intelephense
-          (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
-        (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-    )
-    (defun ime-go-before-save ()
-      (interactive)
-      (when lsp-mode
-        (lsp-organize-imports)
-        (lsp-format-buffer)))
+(use-package posframe)
 
-  (setq lsp-completion-provider :none)
-  (setq lsp-ui-doc-show-with-cursor t)
 
-   (use-package lsp-ui
-    :ensure t
-    :config
-    (setq lsp-ui-sideline-ignore-duplicate t)
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-    )
+    (use-package lsp-mode
+      :init
+      ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+      (setq lsp-keymap-prefix "C-c l")
+      :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+             ;; if you want which-key integration
+             (lsp-mode . lsp-enable-which-key-integration))
+      :commands lsp
+      :config
+          (setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
+          (with-eval-after-load 'lsp-intelephense
+            (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
+          (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+      )
+      (defun ime-go-before-save ()
+        (interactive)
+        (when lsp-mode
+          (lsp-organize-imports)
+          (lsp-format-buffer)))
 
-  (use-package helm-lsp
-:ensure t
-:after (lsp-mode)
-:commands (helm-lsp-workspace-symbol)
-:init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
+    (setq lsp-completion-provider :none)
+    (setq lsp-ui-doc-show-with-cursor t)
+
+     (use-package lsp-ui
+      :ensure t
+      :config
+      (setq lsp-ui-sideline-ignore-duplicate t)
+      (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+      )
+
+(setq lsp-ui-doc-position 'at-point)
+
+    (use-package helm-lsp
+  :ensure t
+  :after (lsp-mode)
+  :commands (helm-lsp-workspace-symbol)
+  :init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
 
 (rune/leader-keys
   "l"  '(:ignore t :which-key "LSP")
@@ -765,6 +770,41 @@ _k_: down      _a_: combine       _q_: quit
   :config
   (setq pyvenv-workon "emacs")  ; Default venv
   (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
+
+;; Enable sbt mode for executing sbt commands
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+   (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+  (use-package scala-mode
+  :interpreter ("scala" . scala-mode))
+
+  (use-package lsp-metals
+    :ensure t
+    :custom
+    ;; You might set metals server options via -J arguments. This might not always work, for instance when
+    ;; metals is installed using nix. In this case you can use JAVA_TOOL_OPTIONS environment variable.
+    (lsp-metals-server-args '(;; Metals claims to support range formatting by default but it supports range
+                              ;; formatting of multiline strings only. You might want to disable it so that
+                              ;; emacs can use indentation provided by scala-mode.
+                              "-J-Dmetals.allow-multiline-string-formatting=off"
+                              ;; Enable unicode icons. But be warned that emacs might not render unicode
+                              ;; correctly in all cases.
+                              "-J-Dmetals.icons=unicode"))
+    ;; In case you want semantic highlighting. This also has to be enabled in lsp-mode using
+    ;; `lsp-semantic-tokens-enable' variable. Also you might want to disable highlighting of modifiers
+    ;; setting `lsp-semantic-tokens-apply-modifiers' to `nil' because metals sends `abstract' modifier
+    ;; which is mapped to `keyword' face.
+    (lsp-metals-enable-semantic-highlighting t)
+    :hook (scala-mode . lsp))
 
 (use-package smudge
   :ensure t)
