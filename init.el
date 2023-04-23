@@ -5,8 +5,7 @@
         ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+(package-refresh-contents)
 
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
@@ -48,7 +47,6 @@
 
 (require 'org-tempo)
 
-(add-to-list 'org-structure-template-alist '("elc" . "src emacs-lisp"))
 
 (setq make-backup-files nil)
 
@@ -81,10 +79,6 @@
                         (agenda . 5)
                         (registers . 5)))
 
-(use-package doom-modeline
-  :ensure t
-  :custom ((doom-modeline-height 15)))
-
 (setq-default mode-line-format
                 '("%e"
                   mode-line-front-space
@@ -108,30 +102,85 @@
                   mode-line-end-spaces
 ))
 
-(use-package centaur-tabs
-  :ensure t
-  :demand
+(use-package which-key
+  :diminish (which-key-mode)
   :config
-  (centaur-tabs-mode t)
-  :bind
-  ("C-c <left>" . centaur-tabs-backward)
-  ("C-c <right>" . centaur-tabs-forward))
+  (setq which-key-idle-delay 0.3)
+  (which-key-mode 1))
+
+(use-package general
+  :ensure t)
+  :config
+  (general-create-definer neko/leader-keys
+    :keymaps '(normal visual emacs)
+    :prefix "SPC"
+    :global-prefix "SPC")
+(general-auto-unbind-keys t)
+(define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
+
+
+(neko/leader-keys
+  ";" '(helm-M-x :which-key "Meta")
+  "/" '(comment-region :which-key "Comment region")
+  "s" '(evil-save :which-key "Save")
+  "b" '(:ignore :override t :which-key "Buffer")
+  "bb" '(counsel-switch-buffer :which-key "Switch buffer")
+  "bk" '(kill-buffer :which-key "Kill buffer")
+  "qq" '(kill-buffer-and-window :which-key "Kill buffer")
+  "ba" '(kill-other-buffers :which-key "Kill other buffer except this"))
+
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+(use-package evil-escape
+  :init
+  (evil-escape-mode)
+  :config
+  (setq-default evil-escape-key-sequence "jk")
+  )
+
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
+
+(use-package hydra
+  :ensure t)
+
+(setq tab-bar-show 1)
+(defun neko/current-tab-name ()
+      (alist-get 'name (tab-bar--current-tab)))
 
 (use-package ivy-rich
-  :ensure t
   :init
  (ivy-rich-mode 1))
-
-(use-package counsel
-  :ensure t)
 
 (use-package all-the-icons
   :ensure t)
 
-(use-package doom-themes 
-:ensure t
-:init (load-theme 'doom-horizon t)
-)
+(use-package catppuccin-theme)
+(setq catppuccin-flavor 'mocha) ;; or 'latte, 'macchiato, or 'mocha
+(catppuccin-reload)
+(load-theme 'catppuccin t)
+
+
+(rune/leader-keys
+     "t"  '(:ignore t :which-key "Theme")
+     "tt" '(counsel-load-theme :which-key "Choose theme"))
 
 (setq explicit-shell-file-name "/usr/bin/zsh")
 (setq shell-file-name "zsh")
@@ -172,20 +221,18 @@
     (set-char-table-range composition-function-table (car char-regexp)
                           `([,(cdr char-regexp) 0 font-shape-gstring]))))
 
-(use-package general
-   :ensure t)
-   :config
-   (general-create-definer rune/leader-keys
-     :keymaps '(normal visual emacs)
-     :prefix "SPC"
-     :global-prefix "SPC")
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy)))
+  ;; NOounsTE: Set this to the folder where you keep your Git repos!
 
-(rune/leader-keys
-     "t"  '(:ignore t :which-key "Toggles")
-     "tt" '(counsel-load-theme :which-key "Choose theme")
-     ";" '(helm-M-x :which-key "Meta")
-     "/" '(comment-region :which-key "Comment region")
+  (neko/leader-keys
+     "p"  '(:ignore t :which-key "Projectile")
+     "pp" '(projectile-command-map :which-key "Command map"))
+     "pf" '(projectile-find-file :which-key "Find File")
 
+(neko/leader-keys
      "w"  '(:ignore t :which-key "Window")
      "ws" '(evil-window-split :which-key "Split")
      "wj" '(evil-window-down :which-key "Go Bottom")
@@ -194,85 +241,18 @@
      "wl" '(evil-window-right :which-key "Go Right")
      "wv" '(evil-window-vsplit :which-key "Vsplit")
      "wq" '(delete-window :which-key "Quit")
-     "wb" '(counsel-switch-buffer :which-key "Switch Buffer")
+     "wb" '(counsel-switch-buffer :which-key "Switch Buffer"))
 
-     "p"  '(:ignore t :which-key "Projectile")
-     "pp" '(projectile-command-map :which-key "Command map")
 
-     "f"  '(:ignore t :which-key "Find")
-     "ff" '(projectile-find-file :which-key "Find File")
 
-     "s" '(evil-save :which-key "Save")
-
-     "o" '(:ignore t :which-key "Open")
-
-     "oa" '(org-agenda :which-key "Org Agenda")
-     "oc" '(cfw:open-org-calendar :which-key "Calendar")
-     "oe" '(neotree :which-key "Neotree")
-     "od" '(dired :which-key "Dired")
-
-      "<left>" '(centaur-tabs-backward :which-key "Previous tab")
-      "<right>" '(centaur-tabs-forward :which-key "Next tab")
-
-      "b" '(:ignore :override t :which-key "Buffer")
-
-      "bb" '(counsel-switch-buffer :which-key "Switch buffer")
-      "bk" '(kill-buffer :which-key "Kill buffer")
-      "qq" '(kill-buffer-and-window :which-key "Kill buffer")
-      "ba" '(kill-other-buffers :which-key "Kill other buffer except this")
-      )
-(general-auto-unbind-keys t)
-(define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command)
-
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
+(use-package helm
   :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-(use-package evil-escape
-  :init
-  (evil-escape-mode)
-  :config
-  (setq-default evil-escape-key-sequence "jk")
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
   )
 
-(use-package paredit :ensure t)
-
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package which-key
-  :ensure t
-  :diminish (which-key-mode)
-  :config
-  (setq which-key-idle-delay 0.3)
-  (which-key-mode 1))
-
-(use-package hydra
-  :ensure t)
-
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
-
-(rune/leader-keys
-  "ts" '(hydra-text-scale/body :which-key "scale text"))
+(neko/leader-keys
+  "h"  '(helm-command-prefix :which-key "Helm"))
 
 (use-package magit
   :ensure t
@@ -284,7 +264,7 @@
   (interactive)
   (magit-status))
 
-(rune/leader-keys
+(neko/leader-keys
     "g" '(:ignore t :which-key "Git")
     "gs" '(open-magit-in-vertical-split :which-key "Magit"))
 
@@ -300,6 +280,8 @@
                     :height 140
                     :italic t)))
   )
+  (neko/leader-keys
+      "gb" '(blamer-mode :which-key "Blame"))
 
 (use-package hydra)
 (use-package smerge-mode
@@ -337,7 +319,7 @@ _k_: down      _a_: combine       _q_: quit
           (hydra-smerge/body))))))
 
 
-(rune/leader-keys
+(neko/leader-keys
      "gm"  '(scimax-smerge/body :which-key "Toggle smerge")
      )
 
@@ -372,7 +354,7 @@ _k_: down      _a_: combine       _q_: quit
     "d" '(dap-hydra t :wk "debugger"))
 	 )
 
-  (rune/leader-keys
+  (neko/leader-keys
     "d"  '(:ignore t :which-key "Debugging")
     "ds" '(dap-debug t :wk "Start debug")
     "db" '(dap-breakpoint-toggle t :wk "Toggle breakpoint")
@@ -393,31 +375,122 @@ _k_: down      _a_: combine       _q_: quit
    (latex . t)
    ))
 
-(setq org-agenda-custom-commands
-      '(("h" "Daily habits" 
-         ((agenda ""))
-         ((org-agenda-show-log t)
-          (org-agenda-ndays 7)
-          (org-agenda-log-mode-items '(state))
-          (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp ":DAILY:"))))
-        ;; other commands here
-        ))
+(use-package org
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ...")
+  (efs/org-font-setup)
+  (setq org-agenda-files
+        '("~/Orgs/")))
+(defun nolinum ()
+  (global-display-line-numbers-mode 0)
+  )
+(add-hook 'org-mode-hook 'nolinum)
 
-;; Automatically tangle our Emacs.org config file when we save it
-(defun efs/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.emacs.d/config.org"))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
+(global-set-key (kbd "C-c c") #'org-capture)
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+(setq org-capture-templates '(("t" "Todo [inbox]" entry
+                               (file+headline "~/Orgs/inbox.org" "Tasks")
+                               "* TODO %i%?")
+                              ("T" "Tickler" entry
+                               (file+headline "~/Orgs/tickler.org" "Tickler")
+                               "* %i%? \n %U")
+                              ("b" "Braindump" entry
+                               (file+headline "~/Orgs/braindump.org" "Braindump")
+                               "* %? \n")))
+
+(setq org-refile-targets '(("~/Orgs/agenda.org" :maxlevel . 3)
+                           ("~/Orgs/someday.org" :level . 1)
+                           ("~/Orgs/tickler.org" :maxlevel . 2)))
+
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Orgs/roam"))
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+
+     ("l" "programming language" plain
+      "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+
+     ("c" "Campus" plain
+      "* Overview\n\n- Subject: %?\n- Lecturer: \n\n** Reference:\n\n** Notes:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+
+     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+      :unnarrowed t)
+
+     ("m" "morning routine" plain
+      "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n* ** TODO 15 minutes meditation\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Daily")
+      :unnarrowed t)
+
+     ("b" "book" plain "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Books")
+      :unnarrowed t)
+     ))
+  (org-roam-dailies-capture-templates
+   '(("d" "default" entry "* %<%I:%M %p>: %?"
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
+
+     ("m" "morning routine" plain
+      "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n** TODO 15 minutes meditation\n\n** Today Agenda\n\n\n"
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
+
+     ("e" "evening reflection" plain
+      "* Evening Reflection\n\n** What went well?\n\n** What did i learn today?\n\n** What could gone better?\n\n** Summary\n\n\n"
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
+
+     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
+     ))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  (require 'org-roam-protocol))
+
+(rune/leader-keys
+  "r"  '(:ignore t :which-key "Roam")
+  "rj" '(org-roam-dailies-capture-today :which-key "Capture today")
+  "rd" '(org-roam-dailies-find-directory :which-key "Journal directory")
+  "ri" '(org-roam-node-insert :which-key "Node insert")
+  "rf" '(org-roam-node-find :which-key "Node find")
+  "rc" '(org-roam-capture :which-key "Capture")
+  "rl" '(org-roam-buffer-toggle :which-key "Buffer toggle")
+  "rg" '(org-roam-ui-open :which-key "Graph"))
+
+(use-package org-roam-ui
+  :after org-roam
+  ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+  ;;         a hookable mode anymore, you're advised to pick something yourself
+  ;;         if you don't care about startup time, use
+  ;;  :hook (after-init . org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
 
 (require 'org-habit)
 (add-to-list 'org-modules 'org-habit)
 
 (setq org-todo-keywords
-    '((sequence "TODO(t)" "WAITING(n)" "|" "DONE(d)" "CANCEL(c)")))
+      '((sequence "TODO(t)" "WAITING(n)" "|" "DONE(d)" "CANCEL(c)")))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -459,134 +532,21 @@ _k_: down      _a_: combine       _q_: quit
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(use-package org
-      :hook (org-mode . efs/org-mode-setup)
-      :config
-      (setq org-ellipsis " ...")
-      (efs/org-font-setup)
-      (setq org-agenda-files
-            '("~/Orgs/")))
-  (defun nolinum ()
-    (global-display-line-numbers-mode 0)
-  )
-(add-hook 'org-mode-hook 'nolinum)
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/.emacs.d/config.org"))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
 
-(global-set-key (kbd "C-c c") #'org-capture)
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
-
-(setq org-capture-templates '(("t" "Todo [inbox]" entry
-                             (file+headline "~/Orgs/inbox.org" "Tasks")
-                             "* TODO %i%?")
-                            ("T" "Tickler" entry
-                             (file+headline "~/Orgs/tickler.org" "Tickler")
-                             "* %i%? \n %U")
-                            ("b" "Braindump" entry
-                             (file+headline "~/Orgs/braindump.org" "Braindump")
-                             "* %? \n")))
-
-(setq org-refile-targets '(("~/Orgs/agenda.org" :maxlevel . 3)
-                         ("~/Orgs/someday.org" :level . 1)
-                         ("~/Orgs/tickler.org" :maxlevel . 2)))
-
-(use-package org-journal
-:defer t
- :init
-  ;; Change default prefix key; needs to be set before loading org-journal
-  (setq org-journal-prefix-key "C-c j ")
-  :config
-  (setq org-journal-dir "~/Orgs/Journal/"
-  org-journal-date-format "%A, %d %B %Y")
-  )
-  
-  (rune/leader-keys
-  "j"  '(:ignore t :which-key "Journal")
-  "jj" '(org-journal-new-entry :which-key "Write journal")
-  )
-
-(use-package org-roam
-  :ensure t
-  :custom
-  (org-roam-directory (file-truename "~/Orgs/roam"))
-  (org-roam-capture-templates
-   '(("d" "default" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t)
-
-     ("l" "programming language" plain
-      "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t)
-
-     ("c" "Campus" plain
-      "* Overview\n\n- Subject: %?\n- Lecturer: \n\n** Reference:\n\n** Notes:\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t)
-
-     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
-      :unnarrowed t)
-
-     ("m" "morning routine" plain
-      "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n* ** TODO 15 minutes meditation\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Daily")
-      :unnarrowed t)
-
-     ("b" "book" plain "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Books")
-      :unnarrowed t)
-   ))
-  (org-roam-dailies-capture-templates
-   '(("d" "default" entry "* %<%I:%M %p>: %?"
-     :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
-
-     ("m" "morning routine" plain
-      "* Morning Routine\n\n** TODO 20 minutes workout\n\n** TODO 20 minutes read book\n\n** TODO 15 minutes meditation\n\n** Today Agenda\n\n\n"
-      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
-
-     ("e" "evening reflection" plain
-      "* Evening Reflection\n\n** What went well?\n\n** What did i learn today?\n\n** What could gone better?\n\n** Summary\n\n\n"
-      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
-
-     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>"))
-   ))
-   :bind (("C-c n l" . org-roam-buffer-toggle)
-       ("C-c n f" . org-roam-node-find)
-       ("C-c n g" . org-roam-graph)
-       ("C-c n i" . org-roam-node-insert)
-       ("C-c n c" . org-roam-capture)
-       ;; Dailies
-       ("C-c n j" . org-roam-dailies-capture-today))
-  :config
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  (require 'org-roam-protocol)
-
-
-  )
-
-(rune/leader-keys
-  "r"  '(:ignore t :which-key "Roam")
-  "rj" '(org-roam-dailies-capture-today :which-key "Capture today")
-  "rd" '(org-roam-dailies-find-directory :which-key "Journal directory")
-  "ri" '(org-roam-node-insert :which-key "Node insert")
-  "rf" '(org-roam-node-find :which-key "Node find")
-  "rc" '(org-roam-capture :which-key "Capture")
-  "rl" '(org-roam-buffer-toggle :which-key "Buffer toggle")
-  "rg" '(org-roam-ui-open :which-key "Graph"))
-
-(use-package org-roam-ui
-  :after org-roam
-  ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-  ;;         a hookable mode anymore, you're advised to pick something yourself
-  ;;         if you don't care about startup time, use
-  ;;  :hook (after-init . org-roam-ui-mode)
-  :config
-  (setq org-roam-ui-sync-theme t
-        org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
+(neko/leader-keys
+     "o" '(:ignore t :which-key "Open")
+     "oa" '(org-agenda :which-key "Org Agenda")
+     "oc" '(cfw:open-org-calendar :which-key "Calendar")
+     "oe" '(neotree :which-key "Neotree")
+     "od" '(dired :which-key "Dired"))
 
 (use-package posframe)
 
@@ -629,7 +589,7 @@ _k_: down      _a_: combine       _q_: quit
   :commands (helm-lsp-workspace-symbol)
   :init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
 
-(rune/leader-keys
+(neko/leader-keys
   "l"  '(:ignore t :which-key "LSP")
   "lg" '(lsp-goto-type-definition :which-key "Go to definition")
   "li" '(lsp-goto-implementation :which-key "Go to implementation")
@@ -806,13 +766,6 @@ _k_: down      _a_: combine       _q_: quit
     (lsp-metals-enable-semantic-highlighting t)
     :hook (scala-mode . lsp))
 
-(use-package smudge
-  :ensure t)
-(setq smudge-oauth2-client-secret "463ea6db52404a62a9fd97b9428da25a")
-(setq smudge-oauth2-client-id "d96cacf178594a9bab92506eea93b7bf")
-(define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
-(setq smudge-transport 'connect)
-
 (use-package company
    :after lsp-mode
    :hook (lsp-mode . company-mode)
@@ -841,53 +794,18 @@ _k_: down      _a_: combine       _q_: quit
   (yas-global-mode 1)
   )
 
-(use-package emms :ensure t)
-(require 'emms-setup)
-(emms-all)
-(setq emms-player-list '(emms-player-mpv))
-(setq emms-source-file-default-directory "~/Music/")
+(use-package elcord :ensure t)
 
 (use-package calfw :ensure t)
 (use-package calfw-org :ensure t)
-(use-package calfw-ical :ensure t)
-(use-package calfw-cal :ensure t)
-(require 'calfw)
 (require 'calfw-org)
-(require 'calfw-cal)
-(require 'calfw-ical)
-
-
-(defun my-open-calendar ()
-  (interactive)
-  (cfw:open-calendar-buffer
-   :contents-sources
-   (list
-    (cfw:org-create-source "Green")  ; orgmode source
-    (cfw:howm-create-source "Blue")  ; howm source
-    (cfw:cal-create-source "Orange") ; diary source
-    (cfw:ical-create-source "Moon" "~/moon.ics" "Gray")  ; ICS source1
-    (cfw:ical-create-source "gcal" "https://calendar.google.com/calendar/ical/pramudyaarya%40ayoconnect.id/public/basic.ics" "IndianRed") ; google calendar ICS
-   )))
 
 (use-package neotree :ensure t)
 (setq neo-smart-open t)
 (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-(setq centaur-tabs-set-icons t)
-
-(setq centaur-tabs-set-bar 'under)
 ;; Note: If you're not using Spacmeacs, in order for the underline to display
 ;; correctly you must add the following line:
 (setq x-underline-at-descent-line t)
-
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy)))
-  ;; NOounsTE: Set this to the folder where you keep your Git repos!
-
-;;  (use-package wakatime-mode)
-  ;; (global-wakatime-mode)
-  ;;'(wakatime-api-key "waka_13d2f057-5212-4cc1-8cfa-172eca1f84c2")
 
 (defun open-terminal-in-vertical-split ()
   (interactive)
@@ -897,62 +815,10 @@ _k_: down      _a_: combine       _q_: quit
     (ansi-term shell))
   )
 
-(rune/leader-keys
+(neko/leader-keys
   "ot" '(open-terminal-in-vertical-split :which-key "Open Terminal"))
 
-(use-package tree-sitter
-  :ensure t
-  :defer t
-  :hook (
-         (go-mode        . tree-sitter-hl-mode)
-         )
-)
-
-(use-package tree-sitter-langs
-  :ensure t
-  :after tree-sitter-mode
-)
-
-(use-package multiple-cursors
-  :ensure t
-  :defer t
-  :bind (
-  ("C-c C-<right>" . 'mc/mark-next-like-this-word) ; choose same word next
-  ("C-c C-<left>" . 'mc/mark-previous-word-like-this) ; choose same word previous
-  ("M-n" . 'mc/mark-next-like-this) ; choose char from next line same position
-  ("M-m" . 'mc/mark-previous-like-this); choose char from previous line same position
-  ("C-c C-_" . 'mc/mark-all-like-this)
-  ("C-x M-m" . 'back-to-indentation)
-  )
-  :hook
-  (multiple-cursors-mode . (lambda()
-                             (unbind-key "<return>" mc/keymap)
-                             (key-chord-define mc/keymap "ew" 'mc/keyboard-quit)
-                             ))
-)
-
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :mode "\\.\\(md\\|mdown\\|markdown\\)\\'"
-  :custom
-  (markdown-header-scaling t)
-  :bind(:map markdown-mode-map
-             ("M-n" . mc/mark-next-like-this)
-             ("M-m" . mc/mark-previous-like-this))
-)
-
-(use-package helm
-  :config
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  )
-(rune/leader-keys
-  "h"  '(helm-command-prefix :which-key "Helm"))
-
 (require 'ox-latex)
-
-
 
 (defun nd-email-filter (contents backend info)
 (let ((email (plist-get info :email)))
@@ -1045,7 +911,7 @@ _k_: down      _a_: combine       _q_: quit
   (persp-mode))
 
 
-     (rune/leader-keys
+     (neko/leader-keys
        "p"  '(:ignore t :which-key "Perspective")
        "ps" '(persp-switch :which-key "Switch perspective")
        "pm" '(persp-merge :which-key "Merge perspective")
