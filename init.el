@@ -79,28 +79,29 @@
                         (agenda . 5)
                         (registers . 5)))
 
+(setq display-battery-mode 1)
 (setq-default mode-line-format
-                '("%e"
-                  mode-line-front-space
-                  mode-line-mule-info
-                  mode-line-client
-                  mode-line-modified
-                  mode-line-remote
-                  mode-line-frame-identification
-                  mode-line-buffer-identification
-                  " "
-                  mode-line-position
-                  (:eval
-                   (if vc-mode
-                       (let* ((noback (replace-regexp-in-string (format "^ %s" (vc-backend buffer-file-name)) " " vc-mode))
-                              (face (cond ((string-match "^ -" noback) 'mode-line-vc)
-                                          ((string-match "^ [:@]" noback) 'mode-line-vc-edit)
-                                          ((string-match "^ [!\\?]" noback) 'mode-line-vc-modified))))
-                         (format " %s" (substring noback 2)))))
-                  "  "
-                  mode-line-misc-info
-                  mode-line-end-spaces
-))
+	      '("%e"
+		mode-line-front-space
+		mode-line-mule-info
+		mode-line-client
+		mode-line-modified
+		mode-line-remote
+		mode-line-frame-identification
+		mode-line-buffer-identification
+		" "
+		mode-line-position
+		(:eval
+		 (if vc-mode
+		     (let* ((noback (replace-regexp-in-string (format "^ %s" (vc-backend buffer-file-name)) " " vc-mode))
+			    (face (cond ((string-match "^ -" noback) 'mode-line-vc)
+					((string-match "^ [:@]" noback) 'mode-line-vc-edit)
+					((string-match "^ [!\\?]" noback) 'mode-line-vc-modified))))
+		       (format " %s" (substring noback 2)))))
+		"  "
+		mode-line-misc-info
+		mode-line-end-spaces
+		))
 
 (use-package which-key
   :diminish (which-key-mode)
@@ -161,13 +162,23 @@
 (use-package hydra
   :ensure t)
 
-(setq tab-bar-show 1)
+(tab-bar-mode 1)                           ;; enable tab bar
+(setq tab-bar-show 1)                      ;; hide bar if <= 1 tabs open
+(setq tab-bar-close-button-show nil)       ;; hide tab close / X button
+(setq tab-bar-new-tab-choice "*dashboard*");; buffer to show in new tabs
+(setq tab-bar-tab-hints t)                 ;; show tab numbers
 (defun neko/current-tab-name ()
       (alist-get 'name (tab-bar--current-tab)))
+(neko/leader-keys
+  "<left>" '(tab-bar-switch-to-prev-tab :which-key "Prev Tab")
+  "<right>" '(tab-bar-switch-to-next-tab :which-key "Next Tab")
+  "n" '(tab-bar-new-tab :which-key "New Tab")
+  )
 
 (use-package ivy-rich
   :init
  (ivy-rich-mode 1))
+(use-package counsel)
 
 (use-package all-the-icons
   :ensure t)
@@ -178,7 +189,7 @@
 (load-theme 'catppuccin t)
 
 
-(rune/leader-keys
+(neko/leader-keys
      "t"  '(:ignore t :which-key "Theme")
      "tt" '(counsel-load-theme :which-key "Choose theme"))
 
@@ -376,10 +387,8 @@ _k_: down      _a_: combine       _q_: quit
    ))
 
 (use-package org
-  :hook (org-mode . efs/org-mode-setup)
   :config
   (setq org-ellipsis " ...")
-  (efs/org-font-setup)
   (setq org-agenda-files
         '("~/Orgs/")))
 (defun nolinum ()
@@ -464,7 +473,7 @@ _k_: down      _a_: combine       _q_: quit
   (org-roam-db-autosync-mode)
   (require 'org-roam-protocol))
 
-(rune/leader-keys
+(neko/leader-keys
   "r"  '(:ignore t :which-key "Roam")
   "rj" '(org-roam-dailies-capture-today :which-key "Capture today")
   "rd" '(org-roam-dailies-find-directory :which-key "Journal directory")
@@ -492,54 +501,20 @@ _k_: down      _a_: combine       _q_: quit
 (setq org-todo-keywords
       '((sequence "TODO(t)" "WAITING(n)" "|" "DONE(d)" "CANCEL(c)")))
 
-(defun efs/org-mode-setup ()
-  (org-indent-mode)
-  (variable-pitch-mode 1)
-  (visual-line-mode 1))
-
-;; Org Mode Configuration ------------------------------------------------------
-
-(defun efs/org-font-setup ()
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-  ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.4)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height 180 ))
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-
-
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode)
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(defun efs/org-babel-tangle-config ()
+(defun neko/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
                       (expand-file-name "~/.emacs.d/config.org"))
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'neko/org-babel-tangle-config)))
 
 (neko/leader-keys
      "o" '(:ignore t :which-key "Open")
@@ -654,7 +629,7 @@ _k_: down      _a_: combine       _q_: quit
 (use-package godoctor)
 (use-package gotest)
 ;; Golang related setup
-(rune/leader-keys
+(neko/leader-keys
   "c"  '(:ignore t :which-key "Code")
   "cg"  '(:ignore t :which-key "Golang")
   "cgg" '(go-add-tags :which-key "Go add tags")
@@ -918,7 +893,9 @@ _k_: down      _a_: combine       _q_: quit
        "pb" '(persp-list-buffers :which-key "Buffers perspective")
        )
 
-     (rune/leader-keys
+     (neko/leader-keys
        "]" '(persp-next :which-key "Next perspective")
        "[" '(persp-prev :which-key "Prev perspective")
        )
+
+(use-package markdown-toc)
