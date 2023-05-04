@@ -13,6 +13,9 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+(use-package clipetty)
+(global-clipetty-mode)
+
 (setq user-full-name "Pramudya Arya Wicaksana")
 
 (setq byte-compile-warnings '(cl-functions))
@@ -336,6 +339,22 @@ _k_: down      _a_: combine       _q_: quit
 
 (use-package flycheck :ensure t)
 
+(use-package flycheck-golangci-lint
+  :ensure t
+  :hook (go-mode . flycheck-golangci-lint-setup))
+
+(defun my/get-config-path (config-file-name)
+  "get the path to config-file-name in the current project as a string, when in `go-mode`."
+  (when (eq major-mode 'go-mode)
+    (let* ((project-root (projectile-project-root))
+	   (config-path (concat project-root config-file-name)))
+      (if (file-exists-p config-path)
+	  config-path
+	(error "configuration file '%s' not found in project root '%s'" config-file-name project-root)))))
+
+(setq my/config-path (my/get-config-path "src/config.json"))
+(setq flycheck-golangci-lint-config my/config-path)
+
 (use-package dap-mode
 	 :ensure t
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
@@ -526,43 +545,46 @@ _k_: down      _a_: combine       _q_: quit
 (use-package posframe)
 
 
-    (use-package lsp-mode
-      :init
-      ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-      (setq lsp-keymap-prefix "C-c l")
-      :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-             ;; if you want which-key integration
-             (lsp-mode . lsp-enable-which-key-integration))
-      :commands lsp
-      :config
-          (setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
-          (with-eval-after-load 'lsp-intelephense
-            (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
-          (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-      )
-      (defun ime-go-before-save ()
-        (interactive)
-        (when lsp-mode
-          (lsp-organize-imports)
-          (lsp-format-buffer)))
+     (use-package lsp-mode
+       :init
+       ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+       (setq lsp-keymap-prefix "C-c l")
+       :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+	      ;; if you want which-key integration
+	      (lsp-mode . lsp-enable-which-key-integration))
+       :commands lsp
+       :config
+	   (setq lsp-intelephense-multi-root nil) ; don't scan unnecessary projects
+	   (with-eval-after-load 'lsp-intelephense
+	     (setf (lsp--client-multi-root (gethash 'iph lsp-clients)) nil))
+	   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+       )
+       (defun ime-go-before-save ()
+	 (interactive)
+	 (when lsp-mode
+	   (lsp-organize-imports)
+	   (lsp-format-buffer)))
 
-    (setq lsp-completion-provider :none)
-    (setq lsp-ui-doc-show-with-cursor t)
+     (setq lsp-completion-provider :none)
+     (setq lsp-ui-doc-show-with-cursor t)
 
-     (use-package lsp-ui
-      :ensure t
-      :config
-      (setq lsp-ui-sideline-ignore-duplicate t)
-      (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-      )
+      (use-package lsp-ui
+       :ensure t
+       :config
+       (setq lsp-ui-sideline-ignore-duplicate t)
+       (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+       )
 
-(setq lsp-ui-doc-position 'at-point)
+ (setq lsp-ui-doc-position 'at-point)
 
-    (use-package helm-lsp
-  :ensure t
-  :after (lsp-mode)
-  :commands (helm-lsp-workspace-symbol)
-  :init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
+     (use-package helm-lsp
+   :ensure t
+   :after (lsp-mode)
+   :commands (helm-lsp-workspace-symbol)
+   :init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
+
+(when (and (fboundp 'tool-bar-mode) (not (display-graphic-p)))
+ (setq lsp-ui-doc-enable nil))
 
 (neko/leader-keys
   "l"  '(:ignore t :which-key "LSP")
@@ -606,12 +628,12 @@ _k_: down      _a_: combine       _q_: quit
   (setq gofmt-command "gofmt")
   (require 'lsp-go)
   (setq lsp-go-analyses
-        '((fieldalignment . t)
-          (nilness . t)
-          (httpresponse . t)
-          (unusedwrite . t)
-          (unusedparams . t)
-          ))
+	'((fieldalignment . t)
+	  (nilness . t)
+	  (httpresponse . t)
+	  (unusedwrite . t)
+	  (unusedparams . t)
+	  ))
   )
 
 (provide 'gopls-config)
@@ -622,6 +644,16 @@ _k_: down      _a_: combine       _q_: quit
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook #'yas-minor-mode)
+(defvar-local flycheck-local-checkers nil)
+(defun +flycheck-checker-get(fn checker property)
+  (or (alist-get property (alist-get checker flycheck-local-checkers))
+      (funcall fn checker property)))
+(advice-add 'flycheck-checker-get :around '+flycheck-checker-get)
+
+
+(add-hook 'go-mode-hook (lambda()
+			  (flycheck-golangci-lint-setup)
+			  (setq flycheck-local-checkers '((lsp . ((next-checkers . (golangci-lint))))))))
 
 (use-package go-fill-struct :ensure t)
 (use-package go-add-tags :ensure t)
@@ -637,14 +669,6 @@ _k_: down      _a_: combine       _q_: quit
   "cgt" '(go-gen-test-all :which-key "Go gen tests"))
 
 (custom-set-variables '(go-add-tags-style 'lower-camel-case))
-
-(use-package flycheck-golangci-lint
-  :hook (go-mode . flycheck-golangci-lint-setup)
-  :config
-  (setq flycheck-golangci-lint-test t)
-  (setq flycheck-golangci-lint-enable-all t)
-  (setq flycheck-golangci-lint-disable-linters '("unused" "staticcheck" "misspell"))
-  )
 
 (use-package rjsx-mode
   :config
